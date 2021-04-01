@@ -35,7 +35,7 @@ jobs:
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
     - name: Build the Docker image
-      run: docker build . --file 12.0/Dockerfile --tag xh116/caddy:latest
+      run: docker build . --file Dockerfile --tag xh116/caddy:latest
       
     - name: Docker Push
       run: docker push xh116/caddy
