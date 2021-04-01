@@ -4,11 +4,11 @@ name: caddy+cloudflare
  #   push:
     # Publish `main` as Docker `latest` image.
     #  branches:
-      - main
+    #   - main
 
     # Publish `v1.2.3` tags as releases.
     #  tags:
-      - v*
+    #  - v*
 
   # Run tests for any PRs.
  #   pull_request:
@@ -41,7 +41,7 @@ jobs:
             docker-compose --file docker-compose.test.yml build
             docker-compose --file docker-compose.test.yml run sut
           else
-            docker build . --file Dockerfile
+            docker build . --file Dockerfile --tag $IMAGE_NAME
           fi
 
   # Push image to GitHub Packages.
@@ -53,11 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
-    steps:
-      - uses: actions/checkout@v2
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
      - name: docker login
        env:
