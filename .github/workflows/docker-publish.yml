@@ -12,7 +12,15 @@ name: caddy+cloudflare
 
   # Run tests for any PRs.
  #   pull_request:
-
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+        
 env:
   # TODO: Change variable to your image's name.
   TZ: Asia/Shanghai
