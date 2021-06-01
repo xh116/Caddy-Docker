@@ -1,4 +1,4 @@
-FROM caddy:2.4.0-builder AS builder
+FROM caddy:2.4.1-builder-alpine AS builder
 
 RUN xcaddy build \
     --with github.com/caddy-dns/cloudflare \
@@ -6,6 +6,6 @@ RUN xcaddy build \
     --with github.com/imgk/caddy-trojan \
     --with github.com/mholt/caddy-webdav 
 
-FROM caddy:2.4.0-builder
+FROM 2.4.1-builder-alpine
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
