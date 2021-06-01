@@ -5,8 +5,25 @@ RUN xcaddy build \
     --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive \
     --with github.com/imgk/caddy-trojan 
 
-FROM 2.4.1-builder
+FROM alpine:3.13
+
+LABEL version "2.4.1"
+LABEL description "Custom Caddyserver as Docker Image"
+
+ENV XDG_CONFIG_HOME /config
+ENV XDG_DATA_HOME /data
+
+RUN apk add --no-cache --purge --clean-protected -u ca-certificates mailcap \
+ && mkdir -p /config/caddy /data/caddy /etc/caddy /usr/share/caddy \
+ && rm -rf /var/cache/apk/*
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
-CMD ["--conf", "/etc/Caddyfile", "--log", "stdout"]
+EXPOSE 80
+EXPOSE 443
+EXPOSE 2019
+
+WORKDIR /srv
+
+ENTRYPOINT ["caddy"]
+CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
