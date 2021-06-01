@@ -7,11 +7,21 @@ RUN xcaddy build \
 
 FROM alpine:latest
 
-RUN apk add --no-cache --purge --clean-protected -u ca-certificates \
+RUN apk add --no-cache --purge --clean-protected -u ca-certificates mailcap \
  && mkdir -p /etc/caddy /usr/share/caddy \
  && rm -rf /var/cache/apk/*
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
+#ENV XDG_CONFIG_HOME /config
+#ENV XDG_DATA_HOME /data
+
+#VOLUME /config
+#VOLUME /data
+
+
+EXPOSE 80
+EXPOSE 443
 
 ENTRYPOINT ["caddy"]
 CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
