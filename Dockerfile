@@ -7,7 +7,6 @@ RUN xcaddy build \
 
 FROM alpine:latest
 
-
 RUN apk add --no-cache --purge --clean-protected -u ca-certificates \
  && mkdir -p /etc/caddy /usr/share/caddy \
  && rm -rf /var/cache/apk/*
@@ -16,8 +15,8 @@ COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 EXPOSE 80
 EXPOSE 443
-EXPOSE 2019
 
+WORKDIR /Server
 
 ENTRYPOINT ["caddy"]
 CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
