@@ -41,7 +41,7 @@ RUN set -e \
 #VOLUME /config
 VOLUME /data
 
-# EXPOSE 80
+EXPOSE 80
 EXPOSE 443
 # EXPOSE 2019
 
