@@ -39,8 +39,8 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
+        context: .
         push: true
-        repository: xh116/caddy
-        tags: xh116/caddy:latest
-        dockerfile: Dockerfile
-        path: .
+        tags: xh116/caddy:latest,xh116/caddy:2.4.3
+        
+       
