@@ -27,16 +27,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v2
-    - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: xh116/caddy:latest
+      uses: docker/build-push-action@v1
+      with:
+        push: true
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: xh116/caddy
+        tags: xh116/caddy:latest
+        dockerfile: Dockerfile
+        path: .
