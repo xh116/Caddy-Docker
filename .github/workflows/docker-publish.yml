@@ -33,6 +33,7 @@ jobs:
     - name: Login to DockerHub
       uses: docker/login-action@v1 
       with:
+        #registry: docker.pkg.github.com
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         
