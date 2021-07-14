@@ -12,10 +12,9 @@ RUN set -e \
         --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive \        
         --with github.com/imgk/caddy-trojan \
         --with github.com/mholt/caddy-webdav 
-        
- 
+         
 
-FROM alpine:3.13 AS dist
+FROM alpine:3.14 AS dist
 
  
 # See https://caddyserver.com/docs/conventions#file-locations for details
