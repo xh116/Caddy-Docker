@@ -7,9 +7,8 @@ RUN set -e \
     && echo ">>>>>>>>>>>>>>> ${version} ###############" \
     && go get -u github.com/caddyserver/xcaddy/cmd/xcaddy \
     && xcaddy build ${version} --output /caddy \ 
-        --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive \  
-        --with github.com/caddy-dns/cloudflare \
-        --with github.com/imgk/caddy-trojan    
+        --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive  
+ 
 
 FROM alpine:3.13 AS dist
 
