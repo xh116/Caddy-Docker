@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine3.14 AS builder
+FROM golang:alpine AS builder
 
 RUN set -e \
     && apk upgrade \
@@ -13,7 +13,7 @@ RUN set -e \
         --with github.com/mholt/caddy-webdav 
          
 
-FROM alpine:3.14 AS dist
+FROM alpine:latest AS dist
 
  
 # See https://caddyserver.com/docs/conventions#file-locations for details
