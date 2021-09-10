@@ -15,6 +15,9 @@ RUN set -e \
 
 FROM alpine:latest AS dist
 
+LABEL maintainer="cx@tinyserve.com"
+
+
  
 # See https://caddyserver.com/docs/conventions#file-locations for details
 # ENV XDG_CONFIG_HOME /config
