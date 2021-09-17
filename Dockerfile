@@ -20,7 +20,7 @@ LABEL maintainer="cx@tinyserve.com"
 
  
 # See https://caddyserver.com/docs/conventions#file-locations for details
-# ENV XDG_CONFIG_HOME /config
+ENV XDG_CONFIG_HOME /config
 ENV XDG_DATA_HOME /data
 
 ENV TZ Asia/Shanghai
@@ -41,7 +41,7 @@ RUN set -e \
     && echo ${TZ} > /etc/timezone \
     && rm -rf /var/cache/apk/*
 
-#VOLUME /config
+VOLUME /config
 VOLUME /data
 
 EXPOSE 80
