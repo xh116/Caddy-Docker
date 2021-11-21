@@ -204,13 +204,13 @@ function install_caddy() {
 	if [ "${SYSTEM_OS}" == "RHEL" ]; then
 		yum update -y
 		yum install -y epel-release
-		yum install -y ca-certificates curl firewalld git lsof
+		yum install -y ca-certificates curl firewalld git lsof libcap
 		firewall-cmd --permanent --zone=public --add-port=22/tcp
 		systemctl start firewalld
 		firewall-cmd --reload
 	else
 		apt update -y
-		apt install -y ca-certificates curl git lsof  
+		apt install -y ca-certificates curl git lsof libcap2-bin
 	    <<-EOF
 			y
 		EOF
