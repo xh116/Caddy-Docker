@@ -231,7 +231,7 @@ function install_caddy() {
 	go version 2>"/dev/null" | grep -q "go1.17" || {
 		__info_msg "Downloading Go 1.17 ..."
 
-		GO_LATEST_VER="$(curl -sL --retry "5" --retry-delay "3" "https://github.com/golang/go/releases" | grep -Eo "go1\.17\.[0-9]+" | sed -n "1p")"
+		GO_LATEST_VER="$(curl -sL --retry "5" --retry-delay "3" "https://github.com/golang/go/tags" | grep -Eo "go1\.17\.[0-9]+" | sed -n "1p")"
 		curl --retry "5" --retry-delay "3" --location "https://golang.org/dl/${GO_LATEST_VER}.linux-${SYSTEM_ARCH}.tar.gz" --output "golang.${GO_LATEST_VER}.tar.gz"
 		tar -zxf "golang.${GO_LATEST_VER}.tar.gz"
 		rm -f "golang.${GO_LATEST_VER}.tar.gz"
@@ -248,7 +248,7 @@ function install_caddy() {
 	export GOMODCACHE="$GOPATH/pkg/mod"
 
 	__info_msg "Fetching Caddy builder ..."
-	go get -u "github.com/caddyserver/xcaddy/cmd/xcaddy"
+	go install "github.com/caddyserver/xcaddy/cmd/xcaddy"
 	__info_msg "Building caddy (this may take a few minutes to be completed) ..."
 	"${GOBIN}/xcaddy" build --with "github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive" --with "github.com/imgk/caddy-trojan" --with "github.com/caddy-dns/cloudflare" 
 
@@ -273,40 +273,39 @@ function install_caddy() {
 	pushd "/etc/caddy"
 
 	mkdir -p "wwwhtml"
-	echo "<iframe  height="740" width=100% src="https://ac.yunyoujun.cn"></iframe>" > "wwwhtml/index.html"
-
+        wget -P "/usr/share/caddy" "https://raw.githubusercontent.com/caddyserver/dist/master/welcome/index.html"
 	echo -e "
 {
-  servers {
-    listener_wrappers {
-      trojan
-    }
-    protocol {
-      allow_h2c
-      experimental_http3
-      strict_sni_host
-    }
-  }
+        servers {
+                listener_wrappers {
+                        trojan
+                }
+                protocol {
+                        allow_h2c
+                        experimental_http3
+                        strict_sni_host
+                }
+        }
 }
 :443, ${CONF_DOMAIN} {
-  tls ${CONF_EMAIL} {
-      protocols tls1.2 tls1.3
-      ciphers TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-  }
-  route {
-    trojan {
-      user ${CONF_TROJAN}
-    }
-    forward_proxy {
-      basic_auth ${CONF_USER} ${CONF_PASS}
-      hide_ip
-      hide_via
-      probe_resistance ${PROBE_RESISTANCE}
-    }
-    file_server {
-      root $PWD/wwwhtml
-    }
-  }
+        tls admin@tinyserve.com {
+                protocols tls1.2 tls1.3
+                ciphers TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        }
+        route {
+                trojan {
+                        user ${CONF_TROJAN}
+                }
+                forward_proxy {
+                        basic_auth ${CONF_USER} ${CONF_PASS}
+                        hide_ip
+                        hide_via
+                        probe_resistance ${PROBE_RESISTANCE}
+                }
+                file_server {
+                        root * /usr/share/caddy
+                }
+        }
 }" > "${CADDY_CONF}"
 
 	cat <<-EOF > "${SERVICE_FILE}"
