@@ -236,7 +236,6 @@ function install_caddy() {
 		tar -zxf "golang.${GO_LATEST_VER}.tar.gz"
 		rm -f "golang.${GO_LATEST_VER}.tar.gz"
 		[ ! -f "./go/bin/go" ] && { __error_msg "Failed to download go binary."; popd; rm -rf "${INSTALL_TEMP_DIR}"; exit 1; }
-
 		export PATH="$PWD/go/bin:$PATH"
 		export GOROOT="$PWD/go"
 		export GOTOOLDIR="$PWD/go/pkg/tool/linux_amd64"
@@ -303,7 +302,7 @@ function install_caddy() {
                         probe_resistance ${PROBE_RESISTANCE}
                 }
                 file_server {
-                        root * /usr/share/caddy
+                        root  /usr/share/caddy
                 }
         }
 }" > "${CADDY_CONF}"
