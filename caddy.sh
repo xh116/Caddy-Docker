@@ -247,7 +247,7 @@ function install_caddy() {
 	export GOMODCACHE="$GOPATH/pkg/mod"
 
 	__info_msg "Fetching Caddy builder ..."
-	go install "github.com/caddyserver/xcaddy/cmd/xcaddy"
+	go install "github.com/caddyserver/xcaddy/cmd/xcaddy@latest"
 	__info_msg "Building caddy (this may take a few minutes to be completed) ..."
 	"${GOBIN}/xcaddy" build --with "github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive" --with "github.com/imgk/caddy-trojan" --with "github.com/caddy-dns/cloudflare" 
 
