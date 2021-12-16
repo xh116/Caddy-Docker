@@ -1,6 +1,6 @@
 FROM php:7.4-fpm-alpine
 
-RUN docker-php-ext-install pdo_mysql mysqli mbstring zip 
+RUN docker-php-ext-install mysqli pdo pdo_mysql 
 
 RUN apk --no-cache update && apk upgrade &&  \
     apk add --no-cache \
@@ -15,7 +15,6 @@ RUN apk --no-cache update && apk upgrade &&  \
       # --with-png=/usr/include/ \
       --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-enable gd \
     && apk del --no-cache \
       freetype-dev \
       libjpeg-turbo-dev \
