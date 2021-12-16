@@ -1,7 +1,7 @@
 FROM php:5.6-fpm-alpine 
 
 
-RUN docker-php-ext-install pdo_mysql mysql mysqli gd
+RUN docker-php-ext-install pdo_mysql mysql mysqli 
 
 RUN apk --no-cache update && apk upgrade \
       freetype \
