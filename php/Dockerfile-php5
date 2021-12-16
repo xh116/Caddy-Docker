@@ -1,8 +1,22 @@
 FROM php:5.6-fpm-alpine 
 
-RUN apk --no-cache update && apk upgrade
 
 RUN docker-php-ext-install pdo_mysql mysql mysqli gd
+
+RUN apk --no-cache update && apk upgrade \
+      freetype \
+      libjpeg-turbo \
+      libpng \
+      freetype-dev \
+      libjpeg-turbo-dev \
+      libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && apk del --no-cache \
+      freetype-dev \
+      libjpeg-turbo-dev \
+      libpng-dev \
+    && rm -rf /tmp/*
+
 
 #Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
