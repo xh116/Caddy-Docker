@@ -13,7 +13,7 @@ RUN apk --no-cache update && apk upgrade &&  \
       libpng-dev \
     && docker-php-ext-configure gd \
       --with-freetype=/usr/include/ \
-      --with-png=/usr/include/ \ # php5 only, no require for php7
+      --with-png=/usr/include/ \
       --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-enable gd \
