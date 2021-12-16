@@ -2,7 +2,7 @@ FROM php:7.4-fpm-alpine
 
 RUN docker-php-ext-install pdo_mysql mysql mysqli mbstring zip 
 
-RUN apk --no-cache update && apk upgrade \
+RUN apk --no-cache update && apk upgrade &&  \
     apk add --no-cache \
       freetype \
       libjpeg-turbo \
@@ -10,12 +10,18 @@ RUN apk --no-cache update && apk upgrade \
       freetype-dev \
       libjpeg-turbo-dev \
       libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-configure gd \
+      --with-freetype=/usr/include/ \
+      # --with-png=/usr/include/ \
+      --with-jpeg=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-enable gd \
     && apk del --no-cache \
       freetype-dev \
       libjpeg-turbo-dev \
       libpng-dev \
     && rm -rf /tmp/*
+
 
 #Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
