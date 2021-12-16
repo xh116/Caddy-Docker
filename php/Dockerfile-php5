@@ -2,7 +2,7 @@ FROM php:5.6-fpm-alpine
 
 RUN apk --no-cache update && apk upgrade
 
-RUN docker-php-ext-install pdo_mysql mysql mysqli
+RUN docker-php-ext-install pdo_mysql mysql mysqli gd
 
 #Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
