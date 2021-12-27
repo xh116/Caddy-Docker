@@ -46,9 +46,7 @@ RUN set -x \
  && unzip vuetorrent.zip \
   # Clean-up
  && rm vuetorrent.zip \ 
- && ls -la \
- && apk del --purge .build-deps \
- && rm -rf /tmp/* /var/cache/apk/*
+ && ls -la  
 
 
 FROM alpine:latest
