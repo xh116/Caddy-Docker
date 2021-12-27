@@ -8,6 +8,7 @@ RUN set -x \
  && apk add --no-cache -t .build-deps \
         boost-dev \
         jq \
+        curl \
         unzip \
         cmake \
         g++ \
@@ -26,8 +27,8 @@ RUN set -x \
  && cd build \
  && cmake .. \
  && make -j$(nproc) \
- && make install-strip \
-  && ls -al /usr/local/lib/
+ && mv libtorrent-rasterbar.* /usr/local/lib/ \
+ && ls -al /usr/local/lib/
 
     # Build qBittorrent from source code
  RUN cd /tmp \   
@@ -41,11 +42,10 @@ RUN set -x \
 
  RUN mkdir /tmp/vuetorrent && cd /tmp/vuetorrent \
  && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
- && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
+ && wget -P /tmp/vuetorrent  https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
  && unzip vuetorrent.zip \
   # Clean-up
- && rm vuetorrent.zip \ 
- && ls -la \
+ && rm vuetorrent.zip \  
  && apk del --purge .build-deps \
  && rm -rf /tmp/* /var/cache/apk/*
 
@@ -53,9 +53,9 @@ RUN set -x \
 FROM alpine:latest
 
 
-COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so.10.0.0 /usr/lib/libtorrent-rasterbar.so.10
+COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so.* /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-COPY --from=builder /tmp/vuetorrent /
+COPY --from=builder /tmp/vuetorrent/vuetorrent /vuetorrent
 
 
 # Install required packages
@@ -73,7 +73,6 @@ ENV HOME=/home/qbittorrent
 ENV PUID=1500
 ENV PGID=1500
 ENV WEBUI_PORT=8080        
-
 
 # Copy files
 
