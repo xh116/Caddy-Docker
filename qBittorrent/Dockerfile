@@ -27,7 +27,7 @@ RUN set -x \
  && cd build \
  && cmake .. \
  && make -j$(nproc) \
- && mv libtorrent-rasterbar.* /usr/local/lib/ \
+ && make install \
  && ls -al /usr/local/lib/
 
     # Build qBittorrent from source code
@@ -53,7 +53,7 @@ RUN set -x \
 FROM alpine:latest
 
 
-COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so.* /usr/lib/
+COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so* /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 COPY --from=builder /tmp/vuetorrent/vuetorrent /vuetorrent
 
@@ -67,17 +67,14 @@ RUN apk --update --no-cache add \
         dumb-init \
         libressl \
         qt5-qtbase \
+        mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
 
 ENV HOME=/home/qbittorrent
 ENV PUID=1500
 ENV PGID=1500
-ENV WEBUI_PORT=8080        
-
-# Copy files
-
-COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
-COPY qBittorrent/entrypoint.sh /
+ENV WEBUI_PORT=8080   
+ 
 
 RUN chmod a+x /usr/local/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
@@ -90,15 +87,12 @@ RUN chmod a+x /usr/local/bin/qbittorrent-nox \
 VOLUME ["/config", "/torrents", "/downloads"]
  
 
-RUN chmod a+x /entrypoint.sh \
-  && addgroup -g ${PGID} qbittorrent \
+RUN addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && qbittorrent-nox --version
 
 
-EXPOSE 8080 6881
+EXPOSE 6881 6881/udp 8080
 
-ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
+ENTRYPOINT ["dumb-init"]
 CMD qbittorrent-nox --webui-port=$WEBUI_PORT
-
-HEALTHCHECK --interval=5s --timeout=2s --retries=20 CMD curl --connect-timeout 15 --silent --show-error --fail http://localhost:8080/ >/dev/null || exit 1
