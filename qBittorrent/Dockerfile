@@ -108,15 +108,27 @@ RUN chmod a+x /usr/local/bin/qbittorrent-nox \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
   && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents
 
-COPY qBittorrent.conf /default/qBittorrent.conf
-COPY entrypoint.sh /
+COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
+COPY qBittorrent/entrypoint.sh /
 
 VOLUME ["/config", "/torrents", "/downloads"]
 
 ENV HOME=/home/qbittorrent
-ENV PUID=500
-ENV PGID=500
+ENV PUID=1500
+ENV PGID=1500
 ENV WEBUI_PORT=8080
+
+RUN chmod a+x /entrypoint.sh \
+  && addgroup -g ${PGID} qbittorrent \
+  && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
+  && qbittorrent-nox --version
+
 
 ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 CMD qbittorrent-nox --webui-port=$WEBUI_PORT
+
+
+
+
+HEALTHCHECK --interval=10s --timeout=10s --start-period=20s \
+  CMD curl --fail http://127.0.0.1:${WEBUI_PORT}/api/v2/app/version || exit 1
