@@ -1,127 +1,91 @@
+FROM alpine:latest
 
-FROM alpine:latest as builder
 
-RUN  apk add --update --no-cache \
-     autoconf \
-     automake \
-     build-base \
-     cmake  \
-     curl \
-     git \
-     icu-dev \
-     libexecinfo-dev \
-     libtool \
-     linux-headers \
-     openssl-dev \
-     perl \
-     pkgconf \
-     python3 \
-     python3-dev \
-     qt5-qtbase-dev \
-     qt5-qtsvg-dev  \
-     qt5-qttools-dev \
-     re2c \
-     tar \
-     zlib-dev \
-  && rm -rf /tmp/* /var/cache/apk/*
+# Compiling qBitTorrent following instructions on
+# https://github.com/qbittorrent/qBittorrent/wiki/Compiling-qBittorrent-on-Debian-and-Ubuntu#Libtorrent
+RUN set -x \
+    # Install build dependencies
+ && apk add --no-cache -t .build-deps \
+        boost-dev \
+        jq \
+        unzip \
+        cmake \
+        g++ \
+        git \
+        libressl-dev \
+        make \
+        qt5-qttools-dev \
 
-RUN set -ex \
-  && cd /tmp \
-  && git clone --shallow-submodules --recurse-submodules https://github.com/ninja-build/ninja.git \
-  && cd ninja \
-  && git checkout "$(git tag -l --sort=-v:refname "v*" | head -n 1)" \
-  && cmake -Wno-dev -B build \
-       -D CMAKE_CXX_STANDARD=17 \
-       -D CMAKE_INSTALL_PREFIX="/usr/local" \
-  && cmake --build build \
-  && cmake --install build
+    # Build lib rasterbar from source code (required by qBittorrent)
+ && LIBTORRENT_RASTERBAR_URL=$(curl -sSL https://api.github.com/repos/arvidn/libtorrent/releases/latest | grep -E 'browser_download_url.*libtorrent-rasterbar'  | head -n 1 | cut -d '"' -f 4) \
+ && mkdir /tmp/libtorrent-rasterbar \
+ && curl -sSL $LIBTORRENT_RASTERBAR_URL | tar xzC /tmp/libtorrent-rasterbar \
+ && cd /tmp/libtorrent-rasterbar/* \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make \
+ && make DESTDIR=/ install \
+ && mv /usr/local/lib64/* /usr/local/lib \
+ && rmdir /usr/local/lib64 \
 
-RUN set -ex \
-  && cd /tmp \
-  && curl -SNLk "https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.tar.gz" -o boost.tar.gz \
-  && mkdir -p /usr/lib/boost \
-  && tar -xf boost.tar.gz -C /usr/lib/boost --strip-components=1 \
-  && ls -al /usr/lib/boost/
+    # Build qBittorrent from source code
+ && git clone https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent \
+ && cd /tmp/qbittorrent \
+    # Checkout latest release
+ && latesttag=$(git describe --tags `git rev-list --tags --max-count=1`) \
+ && git checkout $latesttag \
+    # Compile
+ && ./configure --disable-gui --disable-stacktrace \
+ && make \
+ && make install \
+ 
+ && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
+ && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
+ && unzip vuetorrent.zip \
+  # Clean-up
+ && rm vuetorrent.zip \ 
+ && ls -la \
+ && apk del --purge .build-deps \
+ && rm -rf /tmp/* /var/cache/apk/*
 
-ARG LIBTORRENT_VERSION="RC_1_2"
-
-RUN set -ex \
-  && cd /tmp \
-  && git clone --shallow-submodules --recurse-submodules https://github.com/arvidn/libtorrent.git \
-  && cd libtorrent \
-# && git checkout tags/v${LIBTORRENT_VERSION} \
-  && git checkout ${LIBTORRENT_VERSION} \
-  && cmake -Wno-dev -G Ninja -B build \
-       -D CMAKE_BUILD_TYPE="Release" \
-       -D CMAKE_CXX_STANDARD=17 \
-       -D BOOST_INCLUDEDIR="/usr/lib/boost/" \
-       -D CMAKE_INSTALL_LIBDIR="lib" \
-       -D CMAKE_INSTALL_PREFIX="/usr/local" \
-  && cmake --build build \
-  && cmake --install build \
-  && ls -al /usr/local/lib/
-
-ARG QBITTORRENT_VERSION="4.3.6"
-
-RUN set -ex \
-  && cd /tmp \
-  && git clone --shallow-submodules --recurse-submodules https://github.com/qbittorrent/qBittorrent.git \
-  && cd qBittorrent \
-  && git checkout tags/release-${QBITTORRENT_VERSION} \
-  && cmake -Wno-dev -G Ninja -B build \
-       -D CMAKE_BUILD_TYPE="release" \
-       -D CMAKE_CXX_STANDARD=17 \
-       -D BOOST_INCLUDEDIR="/usr/lib/boost/" \
-       -D CMAKE_CXX_STANDARD_LIBRARIES="/usr/lib/libexecinfo.so" \
-       -D CMAKE_INSTALL_PREFIX="/usr/local" \
-       -D DBUS=OFF \
-       -D GUI=OFF \
-       -D QBT_VER_STATUS="" \
-       -D STACKTRACE=OFF \
-  && cmake --build build \
-  && cmake --install build \
-  && ls -al /usr/local/bin/ \
-  && qbittorrent-nox --help \
-  && ldd /usr/local/bin/qbittorrent-nox |cut -d ">" -f 2|grep lib|cut -d "(" -f 1|xargs tar -chvf /qbittorrent.tar \
-  && mkdir /qbittorrent-bin \
-  && tar -xvf /qbittorrent.tar -C /qbittorrent-bin \
-  && cp --parents /usr/local/bin/qbittorrent-nox /qbittorrent-bin
 
 FROM alpine:latest
 
-COPY --from=builder /qbittorrent-bin /
 
-RUN runDeps="$( \
-  scanelf --needed --nobanner /usr/lib/libtorrent-* /usr/bin/qbittorrent* \
-    | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-    | xargs -r apk info --installed \
-    | sort -u \
-  )" \
-  && apk add --update --no-cache --virtual .run-deps $runDeps \
-  && apk add --update --no-cache ca-certificates unzip dumb-init python3 su-exec \
-  && rm -rf /tmp/* /var/cache/apk/*
+
+# Install required packages
+RUN apk add --no-cache \
+        boost-system \
+        boost-thread \
+        ca-certificates \
+        curl \
+        dumb-init \
+        libressl \
+        qt5-qtbase
 
 RUN chmod a+x /usr/local/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
   && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents \
-  # add theme
-  && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
-  && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
-  && unzip vuetorrent.zip \
-  && rm vuetorrent.zip 
-  
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents        
+
+# Copy files
+
+COPY --from=builder /tmp/qbittorrent /
+COPY --from=builder /tmp/qbittorrent/vuetorrent /home/qbittorrent/
 COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
 COPY qBittorrent/entrypoint.sh /
 
 VOLUME ["/config", "/torrents", "/downloads"]
 
+
 ENV HOME=/home/qbittorrent
 ENV PUID=1500
 ENV PGID=1500
 ENV WEBUI_PORT=8080
+
 
 RUN chmod a+x /entrypoint.sh \
   && addgroup -g ${PGID} qbittorrent \
@@ -129,9 +93,9 @@ RUN chmod a+x /entrypoint.sh \
   && qbittorrent-nox --version
 
 
+EXPOSE 8080 6881
 
 ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 CMD qbittorrent-nox --webui-port=$WEBUI_PORT
 
-HEALTHCHECK --interval=10s --timeout=10s --start-period=20s \
-  CMD curl --fail http://127.0.0.1:${WEBUI_PORT}/api/v2/app/version || exit 1
+HEALTHCHECK --interval=5s --timeout=2s --retries=20 CMD curl --connect-timeout 15 --silent --show-error --fail http://localhost:8080/ >/dev/null || exit 1
