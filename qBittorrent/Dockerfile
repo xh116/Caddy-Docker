@@ -14,9 +14,10 @@ RUN set -x \
         git \
         libressl-dev \
         make \
-        qt5-qttools-dev \
+        qt5-qttools-dev 
 
     # Build lib rasterbar from source code (required by qBittorrent)
+ RUN cd /tmp \      
  && LIBTORRENT_RASTERBAR_URL=$(curl -sSL https://api.github.com/repos/arvidn/libtorrent/releases/latest | grep -E 'browser_download_url.*libtorrent-rasterbar'  | head -n 1 | cut -d '"' -f 4) \
  && mkdir /tmp/libtorrent-rasterbar \
  && curl -sSL $LIBTORRENT_RASTERBAR_URL | tar xzC /tmp/libtorrent-rasterbar \
@@ -27,19 +28,18 @@ RUN set -x \
  && make \
  && make DESTDIR=/ install \
  && mv /usr/local/lib64/* /usr/local/lib \
- && rmdir /usr/local/lib64 \
+ && rmdir /usr/local/lib64 
 
     # Build qBittorrent from source code
+ RUN cd /tmp \   
  && git clone https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent \
  && cd /tmp/qbittorrent \
-    # Checkout latest release
- && latesttag=$(git describe --tags `git rev-list --tags --max-count=1`) \
- && git checkout $latesttag \
-    # Compile
  && ./configure --disable-gui --disable-stacktrace \
- && make \
- && make install 
- 
+ && make -j$(nproc) \
+ && make install \
+ && ls -al /usr/local/bin/ \
+ && qbittorrent-nox --help
+
  RUN mkdir /tmp/vuetorrent && cd /tmp/vuetorrent \
  && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
  && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
@@ -49,6 +49,7 @@ RUN set -x \
  && ls -la \
  && apk del --purge .build-deps \
  && rm -rf /tmp/* /var/cache/apk/*
+
 
 FROM alpine:latest
 
