@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:latest AS builder
 
 
 # Compiling qBitTorrent following instructions on
