@@ -38,16 +38,17 @@ RUN set -x \
     # Compile
  && ./configure --disable-gui --disable-stacktrace \
  && make \
- && make install \
+ && make install 
  
- && cd /tmp \
+ RUN mkdir /tmp/vuetorrent && cd /tmp/vuetorrent \
  && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
  && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
  && unzip vuetorrent.zip \
   # Clean-up
  && rm vuetorrent.zip \ 
- && ls -la  
-
+ && ls -la \
+ && apk del --purge .build-deps \
+ && rm -rf /tmp/* /var/cache/apk/*
 
 FROM alpine:latest
 
