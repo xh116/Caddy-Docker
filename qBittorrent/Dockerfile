@@ -38,7 +38,7 @@ RUN set -ex \
 
 RUN set -ex \
   && cd /tmp \
-  && curl -SNLk "https://github.com/boostorg/boost/releases/tag/boost-1.78.0" -o boost.tar.gz \
+  && curl -SNLk "https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.tar.gz" -o boost.tar.gz \
   && mkdir -p /usr/lib/boost \
   && tar -xf boost.tar.gz -C /usr/lib/boost --strip-components=1 \
   && ls -al /usr/lib/boost/
