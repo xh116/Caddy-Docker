@@ -1,101 +1,122 @@
-FROM alpine:latest AS builder
 
-# Install required packages
-RUN apk add --update --no-cache \
-    autoconf \
-    automake \
-    binutils \
-    build-base \
-    cppunit-dev \
-    libtool \
-    linux-headers \
-    ncurses-dev \
-    openssl-dev \
-    zlib-dev \
-    qt5-qtbase \
-    qt5-qttools-dev \
-  && rm -rf /tmp/* /var/cache/apk/* 
+FROM alpine:latest as builder
 
-RUN apk --update add --no-cache  --virtual \
-    build-dependencies \
-    boost-build \ 
-    boost-dev \ 
-    cmake \
-    coreutils \
-    g++ \
-    gcc \
-    git \
-    py3-setuptools \
-    python3-dev \
-    openssl-dev \
-    samurai    
+RUN  apk add --update --no-cache \
+     autoconf \
+     automake \
+     build-base \
+     cmake  \
+     curl \
+     git \
+     icu-dev \
+     libexecinfo-dev \
+     libtool \
+     linux-headers \
+     openssl-dev \
+     perl \
+     pkgconf \
+     python3 \
+     python3-dev \
+     qt5-qtbase-dev \
+     qt5-qtsvg-dev  \
+     qt5-qttools-dev \
+     re2c \
+     tar \
+     zlib-dev \
+  && rm -rf /tmp/* /var/cache/apk/*
 
+RUN set -ex \
+  && cd /tmp \
+  && git clone --shallow-submodules --recurse-submodules https://github.com/ninja-build/ninja.git \
+  && cd ninja \
+  && git checkout "$(git tag -l --sort=-v:refname "v*" | head -n 1)" \
+  && cmake -Wno-dev -B build \
+       -D CMAKE_CXX_STANDARD=17 \
+       -D CMAKE_INSTALL_PREFIX="/usr/local" \
+  && cmake --build build \
+  && cmake --install build
 
-# Compiling libtorrent following instructions on
+RUN set -ex \
+  && cd /tmp \
+  && curl -SNLk "https://github.com/boostorg/boost/releases/tag/boost-1.78.0" -o boost.tar.gz \
+  && mkdir -p /usr/lib/boost \
+  && tar -xf boost.tar.gz -C /usr/lib/boost --strip-components=1 \
+  && ls -al /usr/lib/boost/
 
-RUN cd /tmp \
-    && git clone --recurse-submodules https://github.com/arvidn/libtorrent.git \
-    && cd libtorrent \
-    && ./configure CXXFLAGS="-std=c++14" --with-libiconv \
-    && make -j$(nproc) \
-    && make install-strip \
-    && ls -al /usr/local/lib/  
-    
+ARG LIBTORRENT_VERSION="RC_1_2"
 
-# Compiling qBitTorrent following instructions on
-RUN cd /tmp \
-  && git clone  https://github.com/qbittorrent/qBittorrent.git \
+RUN set -ex \
+  && cd /tmp \
+  && git clone --shallow-submodules --recurse-submodules https://github.com/arvidn/libtorrent.git \
+  && cd libtorrent \
+# && git checkout tags/v${LIBTORRENT_VERSION} \
+  && git checkout ${LIBTORRENT_VERSION} \
+  && cmake -Wno-dev -G Ninja -B build \
+       -D CMAKE_BUILD_TYPE="Release" \
+       -D CMAKE_CXX_STANDARD=17 \
+       -D BOOST_INCLUDEDIR="/usr/lib/boost/" \
+       -D CMAKE_INSTALL_LIBDIR="lib" \
+       -D CMAKE_INSTALL_PREFIX="/usr/local" \
+  && cmake --build build \
+  && cmake --install build \
+  && ls -al /usr/local/lib/
+
+ARG QBITTORRENT_VERSION="4.3.6"
+
+RUN set -ex \
+  && cd /tmp \
+  && git clone --shallow-submodules --recurse-submodules https://github.com/qbittorrent/qBittorrent.git \
   && cd qBittorrent \
-  && ./configure --disable-gui \
-  && make -j$(nproc) \
-  && make install \
+  && git checkout tags/release-${QBITTORRENT_VERSION} \
+  && cmake -Wno-dev -G Ninja -B build \
+       -D CMAKE_BUILD_TYPE="release" \
+       -D CMAKE_CXX_STANDARD=17 \
+       -D BOOST_INCLUDEDIR="/usr/lib/boost/" \
+       -D CMAKE_CXX_STANDARD_LIBRARIES="/usr/lib/libexecinfo.so" \
+       -D CMAKE_INSTALL_PREFIX="/usr/local" \
+       -D DBUS=OFF \
+       -D GUI=OFF \
+       -D QBT_VER_STATUS="" \
+       -D STACKTRACE=OFF \
+  && cmake --build build \
+  && cmake --install build \
   && ls -al /usr/local/bin/ \
-  && apk del --purge build-dependencies  
-   
-  
-FROM alpine:latest 
+  && qbittorrent-nox --help \
+  && ldd /usr/local/bin/qbittorrent-nox |cut -d ">" -f 2|grep lib|cut -d "(" -f 1|xargs tar -chvf /qbittorrent.tar \
+  && mkdir /qbittorrent-bin \
+  && tar -xvf /qbittorrent.tar -C /qbittorrent-bin \
+  && cp --parents /usr/local/bin/qbittorrent-nox /qbittorrent-bin
 
-COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so.10.0.0 /usr/lib/libtorrent-rasterbar.so.10
-COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
- 
-RUN apk --update --no-cache add \
-    bind-tools \
-    curl \
-    openssl \
-    qt5-qtbase \
-    shadow \
-    tzdata \
-    unrar \
-    unzip \
-    zlib \
-  && rm -rf /tmp/* /var/cache/apk/* 
- 
-RUN set -x \
-    # Add non-root user
- && adduser -S -D -u 520 -g 520 -s /sbin/nologin qbittorrent \
-    # Create symbolic links to simplify mounting
- && mkdir -p /home/qbittorrent/.config/qBittorrent \
- && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
- && mkdir /downloads \
- && chmod go+rw -R /home/qbittorrent /downloads \
- && ln -s /home/qbittorrent/.config/qBittorrent /config \
- && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents \
-    # Check it works
- && su qbittorrent -s /bin/sh -c 'qbittorrent-nox -v'
+FROM alpine:latest
 
-# Default configuration file.
-COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
-COPY qBittorrent/entrypoint.sh /
+COPY --from=builder /qbittorrent-bin /
+
+RUN runDeps="$( \
+  scanelf --needed --nobanner /usr/lib/libtorrent-* /usr/bin/qbittorrent* \
+    | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+    | xargs -r apk info --installed \
+    | sort -u \
+  )" \
+  && apk add --update --no-cache --virtual .run-deps $runDeps \
+  && apk add --update --no-cache ca-certificates dumb-init python3 su-exec \
+  && rm -rf /tmp/* /var/cache/apk/*
+
+RUN chmod a+x /usr/local/bin/qbittorrent-nox \
+  && mkdir -p /home/qbittorrent/.config/qBittorrent \
+  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
+  && mkdir /downloads \
+  && ln -s /home/qbittorrent/.config/qBittorrent /config \
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents
+
+COPY qBittorrent.conf /default/qBittorrent.conf
+COPY entrypoint.sh /
 
 VOLUME ["/config", "/torrents", "/downloads"]
 
 ENV HOME=/home/qbittorrent
-
-USER qbittorrent
-
-EXPOSE 8080 6881
+ENV PUID=500
+ENV PGID=500
+ENV WEBUI_PORT=8080
 
 ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
-CMD ["qbittorrent-nox"]
-
-HEALTHCHECK --interval=5s --timeout=2s --retries=20 CMD curl --connect-timeout 15 --silent --show-error --fail http://localhost:8080/ >/dev/null || exit 1
+CMD qbittorrent-nox --webui-port=$WEBUI_PORT
