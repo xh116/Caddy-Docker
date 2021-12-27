@@ -27,8 +27,7 @@ RUN set -x \
  && cmake .. \
  && make \
  && make DESTDIR=/ install \
- && mv /usr/local/lib64/* /usr/local/lib \
- && rmdir /usr/local/lib64 
+ && mv /usr/local/lib64/* /usr/local/lib  
 
     # Build qBittorrent from source code
  RUN cd /tmp \   
