@@ -98,7 +98,7 @@ RUN runDeps="$( \
     | sort -u \
   )" \
   && apk add --update --no-cache --virtual .run-deps $runDeps \
-  && apk add --update --no-cache ca-certificates dumb-init python3 su-exec \
+  && apk add --update --no-cache ca-certificates unzip dumb-init python3 su-exec \
   && rm -rf /tmp/* /var/cache/apk/*
 
 RUN chmod a+x /usr/local/bin/qbittorrent-nox \
@@ -109,9 +109,10 @@ RUN chmod a+x /usr/local/bin/qbittorrent-nox \
   && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents \
   # add theme
   && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
-  && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip
-
-
+  && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
+  && unzip vuetorrent.zip \
+  && rm vuetorrent.zip 
+  
 COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
 COPY qBittorrent/entrypoint.sh /
 
