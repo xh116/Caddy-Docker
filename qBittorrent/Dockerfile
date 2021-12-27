@@ -40,9 +40,9 @@ RUN set -x \
  && ls -al /usr/local/bin/ \
  && qbittorrent-nox --help
 
- RUN mkdir /tmp/vuetorrent && cd /tmp/vuetorrent \
+ RUN mkdir /vuetorrent && cd /vuetorrent \
  && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
- && wget -P /tmp/vuetorrent  https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
+ && wget -P /vuetorrent  https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
  && unzip vuetorrent.zip \
   # Clean-up
  && rm vuetorrent.zip \  
@@ -55,7 +55,7 @@ FROM alpine:latest
 
 COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so* /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-COPY --from=builder /tmp/vuetorrent/vuetorrent /vuetorrent
+COPY --from=builder /vuetorrent/vuetorrent /vuetorrent
 
 
 # Install required packages
