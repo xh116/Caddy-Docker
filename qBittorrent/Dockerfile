@@ -5,10 +5,8 @@ RUN apk add --update --no-cache \
     autoconf \
     automake \
     binutils \
-    boost-dev \
     build-base \
     cppunit-dev \
-    git \
     libtool \
     linux-headers \
     ncurses-dev \
@@ -16,14 +14,28 @@ RUN apk add --update --no-cache \
     zlib-dev \
     qt5-qtbase \
     qt5-qttools-dev \
-  && rm -rf /tmp/* /var/cache/apk/*
+  && rm -rf /tmp/* /var/cache/apk/* 
+
+RUN apk --update add --no-cache  --virtual \
+    build-dependencies \
+    boost-build \ 
+    boost-dev \ 
+    cmake \
+    coreutils \
+    g++ \
+    gcc \
+    git \
+    py3-setuptools \
+    python3-dev \
+    openssl-dev \
+    samurai    
+
 
 # Compiling libtorrent following instructions on
 
 RUN cd /tmp \
     && git clone --recurse-submodules https://github.com/arvidn/libtorrent.git \
     && cd libtorrent \
-    && ./autotool.sh \
     && ./configure CXXFLAGS="-std=c++14" --with-libiconv \
     && make -j$(nproc) \
     && make install-strip \
@@ -37,8 +49,9 @@ RUN cd /tmp \
   && ./configure --disable-gui \
   && make -j$(nproc) \
   && make install \
-  && ls -al /usr/local/bin/ 
-  
+  && ls -al /usr/local/bin/ \
+  && apk del --purge build-dependencies  
+   
   
 FROM alpine:latest 
 
