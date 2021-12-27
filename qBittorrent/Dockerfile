@@ -106,7 +106,11 @@ RUN chmod a+x /usr/local/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents \
+  # add theme
+  && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
+  && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip
+
 
 COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
 COPY qBittorrent/entrypoint.sh /
@@ -124,11 +128,9 @@ RUN chmod a+x /entrypoint.sh \
   && qbittorrent-nox --version
 
 
+
 ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 CMD qbittorrent-nox --webui-port=$WEBUI_PORT
-
-
-
 
 HEALTHCHECK --interval=10s --timeout=10s --start-period=20s \
   CMD curl --fail http://127.0.0.1:${WEBUI_PORT}/api/v2/app/version || exit 1
