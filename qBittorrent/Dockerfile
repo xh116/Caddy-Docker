@@ -40,6 +40,7 @@ RUN set -x \
  && make \
  && make install \
  
+ && cd /tmp \
  && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
  && wget -P /home/qbittorrent https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
  && unzip vuetorrent.zip \
@@ -53,16 +54,32 @@ RUN set -x \
 FROM alpine:latest
 
 
+COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so.10.0.0 /usr/lib/libtorrent-rasterbar.so.10
+COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
+COPY --from=builder /tmp/vuetorrent /
+
 
 # Install required packages
-RUN apk add --no-cache \
+RUN apk --update --no-cache add \
         boost-system \
         boost-thread \
         ca-certificates \
         curl \
         dumb-init \
         libressl \
-        qt5-qtbase
+        qt5-qtbase \
+        && rm -rf /tmp/* /var/cache/apk/*
+
+ENV HOME=/home/qbittorrent
+ENV PUID=1500
+ENV PGID=1500
+ENV WEBUI_PORT=8080        
+
+
+# Copy files
+
+COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
+COPY qBittorrent/entrypoint.sh /
 
 RUN chmod a+x /usr/local/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
@@ -71,21 +88,9 @@ RUN chmod a+x /usr/local/bin/qbittorrent-nox \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
   && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents        
 
-# Copy files
-
-COPY --from=builder /tmp/qbittorrent /
-COPY --from=builder /tmp/qbittorrent/vuetorrent /home/qbittorrent/
-COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
-COPY qBittorrent/entrypoint.sh /
 
 VOLUME ["/config", "/torrents", "/downloads"]
-
-
-ENV HOME=/home/qbittorrent
-ENV PUID=1500
-ENV PGID=1500
-ENV WEBUI_PORT=8080
-
+ 
 
 RUN chmod a+x /entrypoint.sh \
   && addgroup -g ${PGID} qbittorrent \
