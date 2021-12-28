@@ -76,7 +76,7 @@ ENV PGID=1500
 ENV WEBUI_PORT=8080   
  
 
-RUN chmod a+x /usr/local/bin/qbittorrent-nox \
+RUN chmod a+x /usr/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
   && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir /downloads \
