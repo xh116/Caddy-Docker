@@ -103,10 +103,7 @@ RUN apk --update --no-cache add \
 
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-
-
 # Default configuration file.
-COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
 COPY qBittorrent/entrypoint.sh / 
 
 
