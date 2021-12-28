@@ -19,14 +19,24 @@ RUN set -x \
     python3 \
     python3-dev \
     re2c \
-    tar  
+    tar  \
+    icu-dev \
+    libexecinfo-dev \
+    openssl-dev \
+    qt6-qtbase-dev \
+    qt6-qttools-dev \
+    zlib-dev \
+    qt6-qtsvg-dev
+
+
+
 
   # Build Ninja from source
 RUN cd /tmp \ 
 && git clone --shallow-submodules --recurse-submodules https://github.com/ninja-build/ninja.git  /tmp/ninja \
 && cd /tmp/ninja \
 && cmake -Wno-dev -B build  \
-    -D CMAKE_CXX_STANDARD=17 \ 
+    -D CMAKE_CXX_STANDARD=17 \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
 && cmake --build build \
 && cmake --install build 
@@ -34,8 +44,8 @@ RUN cd /tmp \
 
   #Download boost
 RUN cd /tmp \ 
-&& curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.tar.gz -o "/tmp/boost_1_78_0.tar.gz" \
-&& tar xf "/tmp/boost_1_78_0.tar.gz" -C "/tmp"
+&& curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz -o "/tmp/boost_1_77_0.tar.gz" \
+&& tar xf "/tmp/boost_1_77_0.tar.gz" -C "/tmp"
 
 
     # Build lib rasterbar from source code (required by qBittorrent)
@@ -47,7 +57,7 @@ RUN cd /tmp \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_CXX_STANDARD=17 \
-    -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_77_0/" \
     -D CMAKE_INSTALL_LIBDIR="lib" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
  && cmake --build build \
@@ -61,13 +71,13 @@ RUN cd /tmp \
  RUN cd /tmp \   
  && git clone https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent \
  && cd /tmp/qbittorrent \
- && cmake -Wno-dev -G Ninja -B build \
+&& cmake -Wno-dev -G Ninja -B build \
     -D QT6=ON \
     -D STACKTRACE=OFF \
     -D GUI=OFF \
     -D CMAKE_BUILD_TYPE="release" \
     -D CMAKE_CXX_STANDARD=17 \
-    -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_77_0/" \
     -D CMAKE_CXX_STANDARD_LIBRARIES="/usr/lib/libexecinfo.so" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
 && cmake --build build \
@@ -117,3 +127,4 @@ VOLUME ["/config", "/torrents", "/downloads"]
 
 
 CMD ["qbittorrent-nox"]
+
