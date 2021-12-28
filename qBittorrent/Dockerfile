@@ -28,6 +28,8 @@ RUN set -x \
  && cmake .. \
  && make -j$(nproc) \
  && make install \
+ && mkdir /lib64 \
+ && cp -P libtorrent-rasterbar.so*  /lib64 \
  && ls -al /usr/local/lib/
 
     # Build qBittorrent from source code
@@ -53,7 +55,7 @@ RUN set -x \
 FROM alpine:latest
 
 
-COPY --from=builder /usr/local/lib/libtorrent-rasterbar.so* /usr/lib/
+COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 COPY --from=builder /vuetorrent/vuetorrent /vuetorrent
 
