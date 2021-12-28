@@ -115,7 +115,7 @@ RUN chmod a+x /usr/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.local/share/data/qBittorrent \
   && mkdir /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/data/qBittorrent /torrents        
+  && ln -s /home/qbittorrent/.local/share/data/qBittorrent /data       
 
 RUN addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
@@ -127,7 +127,7 @@ ENV PGID=500
 ENV WEBUI_PORT=8080   
 
 EXPOSE 6881 6881/udp 8080
-VOLUME ["/config", "/torrents", "/downloads"]
+VOLUME ["/config", "/data", "/downloads"]
 
 
 ENTRYPOINT ["/entrypoint.sh"]
