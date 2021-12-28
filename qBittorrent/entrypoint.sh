@@ -20,7 +20,6 @@ WebUI\ServerDomains=*
 WebUI\AlternativeUIEnabled=${ALT_WEBUI}
 WebUI\Port=${WEBUI_PORT}
 Downloads\SavePath=/downloads
-Connection\PortRangeMin=9881
 Downloads\ScanDirsV2=@Variant(\0\0\0\x1c\0\0\0\0)
 
 [LegalNotice]
