@@ -40,14 +40,14 @@ RUN set -x \
  && make -j$(nproc) \
  && make install \
  && ls -al /usr/local/bin/ \
- && qbittorrent-nox --help
+ && qbittorrent-nox --help \
 
- RUN mkdir /vuetorrent && cd /vuetorrent \
- && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
- && wget -P /vuetorrent  https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
- && unzip vuetorrent.zip \
-  # Clean-up
- && rm vuetorrent.zip \  
+## RUN mkdir /vuetorrent && cd /vuetorrent \
+# && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
+# && wget -P /vuetorrent  https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
+# && unzip vuetorrent.zip \
+# Clean-up
+# && rm vuetorrent.zip \  
  && apk del --purge .build-deps \
  && rm -rf /tmp/* /var/cache/apk/*
 
@@ -57,8 +57,7 @@ FROM alpine:latest
 
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-COPY --from=builder /vuetorrent/vuetorrent /vuetorrent
-
+ 
 
 # Install required packages
 RUN apk --update --no-cache add \
