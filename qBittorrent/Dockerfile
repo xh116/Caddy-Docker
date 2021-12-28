@@ -19,15 +19,7 @@ RUN set -x \
     python3 \
     python3-dev \
     re2c \
-    tar \
-    boost-dev \
-    icu-dev \
-    libexecinfo-dev \
-    openssl-dev \
-    qt6-qtbase-dev \
-    qt6-qttools-dev \
-    qt6-qtsvg-dev \
-    zlib-dev 
+    tar  
 
   # Build Ninja from source
 RUN cd /tmp \ 
@@ -40,6 +32,11 @@ RUN cd /tmp \
 && cmake --install build 
 
 
+  #Download boost
+RUN cd /tmp \ 
+&& curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.tar.gz -o "/tmp/boost_1_78_0.tar.gz" \
+&& tar xf "/tmp/boost_1_78_0.tar.gz" -C "/tmp"
+
 
     # Build lib rasterbar from source code (required by qBittorrent)
  RUN cd /tmp \      
@@ -50,6 +47,7 @@ RUN cd /tmp \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_CXX_STANDARD=17 \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_INSTALL_LIBDIR="lib" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
  && cmake --build build \
@@ -69,13 +67,14 @@ RUN cd /tmp \
     -D GUI=OFF \
     -D CMAKE_BUILD_TYPE="release" \
     -D CMAKE_CXX_STANDARD=17 \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_CXX_STANDARD_LIBRARIES="/usr/lib/libexecinfo.so" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
-    && cmake --build build \
- && cmake --install build \  
-  # Clean-up
- && apk del --purge .build-deps \
- && rm -rf /tmp/* /var/cache/apk/*
+&& cmake --build build \
+&& cmake --install build \  
+# Clean-up
+&& apk del --purge .build-deps \
+&& rm -rf /tmp/* /var/cache/apk/*
 
 
 FROM alpine:latest
@@ -88,10 +87,10 @@ COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 # Install required packages
 RUN apk --update --no-cache add \
         bind-tools \
-        dumb-init \
-        icu-dev \
+        boost-dev  \
         openssl-dev \
         qt6-qtbase-dev \
+        qt6-qttools-dev \
         zlib-dev \ 
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
@@ -109,16 +108,12 @@ RUN chmod a+x /usr/bin/qbittorrent-nox \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
   && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents        
 
-
-VOLUME ["/config", "/torrents", "/downloads"]
- 
-
 RUN addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && qbittorrent-nox --version
 
-
 EXPOSE 6881 6881/udp 8080
+VOLUME ["/config", "/torrents", "/downloads"]
 
-ENTRYPOINT ["dumb-init"]
-CMD qbittorrent-nox --webui-port=$WEBUI_PORT
+
+CMD ["qbittorrent-nox"]
