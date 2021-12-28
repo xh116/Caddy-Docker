@@ -90,14 +90,6 @@ RUN cd /tmp \
 FROM alpine:latest
 
 
-COPY --from=builder /lib64 /usr/lib/
-COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-
-
-# Default configuration file.
-COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
-COPY qBittorrent/entrypoint.sh /
-
 # Install required packages
 RUN apk --update --no-cache add \
         bind-tools \
@@ -107,23 +99,32 @@ RUN apk --update --no-cache add \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
 
-ENV HOME=/home/qbittorrent
-ENV PUID=500
-ENV PGID=500
-ENV WEBUI_PORT=8080   
- 
+
+COPY --from=builder /lib64 /usr/lib/
+COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
+
+
+# Default configuration file.
+COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
+COPY qBittorrent/entrypoint.sh / 
+
 
 RUN chmod a+x /usr/bin/qbittorrent-nox \
   && chmod a+x /entrypoint.sh \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
-  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
+  && mkdir -p /home/qbittorrent/.local/share/data/qBittorrent \
   && mkdir /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/qBittorrent /torrents        
+  && ln -s /home/qbittorrent/.local/share/data/qBittorrent /torrents        
 
 RUN addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && qbittorrent-nox --version
+
+ENV HOME=/home/qbittorrent
+ENV PUID=500
+ENV PGID=500
+ENV WEBUI_PORT=8080   
 
 EXPOSE 6881 6881/udp 8080
 VOLUME ["/config", "/torrents", "/downloads"]
