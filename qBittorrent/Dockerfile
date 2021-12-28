@@ -124,4 +124,4 @@ EXPOSE 6881 6881/udp 8080
 VOLUME ["/config", "/torrents", "/downloads"]
 
 
-CMD ["qbittorrent-nox"]
+CMD ["qbittorrent-nox", "--webui-port=$WEBUI_PORT"]
