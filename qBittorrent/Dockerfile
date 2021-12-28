@@ -122,8 +122,8 @@ RUN addgroup -g ${PGID} qbittorrent \
   && qbittorrent-nox --version
 
 ENV HOME=/home/qbittorrent
-ENV PUID=500
-ENV PGID=500
+ENV PUID=1500
+ENV PGID=1500
 ENV WEBUI_PORT=8080   
 
 EXPOSE 6881 6881/udp 8080
