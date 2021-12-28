@@ -96,6 +96,7 @@ RUN apk --update --no-cache add \
         openssl \
         qt6-qtbase \
         zlib \ 
+        tzdata \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
 
