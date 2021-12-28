@@ -126,7 +126,7 @@ ENV PUID=1500
 ENV PGID=1500
 ENV WEBUI_PORT=8080   
 
-EXPOSE 6881 6881/udp 8080
+EXPOSE 9881 9881/udp 8080
 VOLUME ["/config", "/data", "/downloads"]
 
 
