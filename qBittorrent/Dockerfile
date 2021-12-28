@@ -92,7 +92,11 @@ FROM alpine:latest
 
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
- 
+
+
+# Default configuration file.
+COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
+COPY qBittorrent/entrypoint.sh /
 
 # Install required packages
 RUN apk --update --no-cache add \
@@ -110,6 +114,7 @@ ENV WEBUI_PORT=8080
  
 
 RUN chmod a+x /usr/bin/qbittorrent-nox \
+  && chmod a+x /entrypoint.sh \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
   && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir /downloads \
@@ -123,5 +128,7 @@ RUN addgroup -g ${PGID} qbittorrent \
 EXPOSE 6881 6881/udp 8080
 VOLUME ["/config", "/torrents", "/downloads"]
 
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["qbittorrent-nox", "--webui-port=$WEBUI_PORT"]
