@@ -2,20 +2,44 @@ FROM alpine:latest AS builder
 
 
 # Compiling qBitTorrent following instructions on
-# https://github.com/qbittorrent/qBittorrent/wiki/Compiling-qBittorrent-on-Debian-and-Ubuntu#Libtorrent
+# https://github.com/qbittorrent/qBittorrent/wiki/Compilation%3A-Alpine-Linux
 RUN set -x \
     # Install build dependencies
  && apk add --no-cache -t .build-deps \
-        boost-dev \
-        jq \
-        curl \
-        unzip \
-        cmake \
-        g++ \
-        git \
-        libressl-dev \
-        make \
-        qt6-qttools-dev 
+    autoconf \
+    automake \
+    build-base \
+    cmake \
+    curl \
+    git \
+    libtool \
+    linux-headers \
+    perl \
+    pkgconf \
+    python3 \
+    python3-dev \
+    re2c \
+    tar \
+    boost-dev \
+    icu-dev \
+    libexecinfo-dev \
+    openssl-dev \
+    qt6-qtbase-dev \
+    qt6-qttools-dev \
+    qt6-qtsvg-dev \
+    zlib-dev 
+
+  # Build Ninja from source
+RUN cd /tmp \ 
+&& git clone --shallow-submodules --recurse-submodules https://github.com/ninja-build/ninja.git  /tmp/ninja \
+&& cd /tmp/ninja \
+&& cmake -Wno-dev -B build  \
+    -D CMAKE_CXX_STANDARD=17 \ 
+    -D CMAKE_INSTALL_PREFIX="/usr/local" \
+&& cmake --build build \
+&& cmake --install build 
+
+
 
     # Build lib rasterbar from source code (required by qBittorrent)
  RUN cd /tmp \      
@@ -23,31 +47,33 @@ RUN set -x \
  && mkdir /tmp/libtorrent-rasterbar \
  && curl -sSL $LIBTORRENT_RASTERBAR_URL | tar xzC /tmp/libtorrent-rasterbar \
  && cd /tmp/libtorrent-rasterbar/* \
- && mkdir build \
- && cd build \
- && cmake .. \
- && make -j$(nproc) \
- && make install \
+ && cmake -Wno-dev -G Ninja -B build \
+    -D CMAKE_BUILD_TYPE="Release" \
+    -D CMAKE_CXX_STANDARD=17 \
+    -D CMAKE_INSTALL_LIBDIR="lib" \
+    -D CMAKE_INSTALL_PREFIX="/usr/local" \
+ && cmake --build build \
+ && cmake --install build \
  && mkdir /lib64 \
- && cp -P libtorrent-rasterbar.so*  /lib64 \
- && ls -al /usr/local/lib/
+ && cp -P /usr/local/lib/libtorrent-rasterbar.so*  /lib64 
+ 
+
 
     # Build qBittorrent from source code
  RUN cd /tmp \   
  && git clone https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent \
  && cd /tmp/qbittorrent \
- && ./configure --disable-gui --disable-stacktrace \
- && make -j$(nproc) \
- && make install \
- && ls -al /usr/local/bin/ \
- && qbittorrent-nox --help \
-
-## RUN mkdir /vuetorrent && cd /vuetorrent \
-# && export version=$(curl -s "https://api.github.com/repos/WDaan/VueTorrent/releases/latest" | jq -r .tag_name)  \
-# && wget -P /vuetorrent  https://github.com/WDaan/VueTorrent/releases/download/${version}/vuetorrent.zip \
-# && unzip vuetorrent.zip \
-# Clean-up
-# && rm vuetorrent.zip \  
+ && cmake -Wno-dev -G Ninja -B build \
+    -D QT6=ON \
+    -D STACKTRACE=OFF \
+    -D GUI=OFF \
+    -D CMAKE_BUILD_TYPE="release" \
+    -D CMAKE_CXX_STANDARD=17 \
+    -D CMAKE_CXX_STANDARD_LIBRARIES="/usr/lib/libexecinfo.so" \
+    -D CMAKE_INSTALL_PREFIX="/usr/local" \
+    && cmake --build build \
+ && cmake --install build \  
+  # Clean-up
  && apk del --purge .build-deps \
  && rm -rf /tmp/* /var/cache/apk/*
 
@@ -61,13 +87,12 @@ COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 
 # Install required packages
 RUN apk --update --no-cache add \
-        boost-system \
-        boost-thread \
-        ca-certificates \
-        curl \
+        bind-tools \
         dumb-init \
-        libressl \
-        qt6-qtbase \
+        icu-dev \
+        openssl-dev \
+        qt6-qtbase-dev \
+        zlib-dev \ 
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
 
