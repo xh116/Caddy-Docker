@@ -67,7 +67,7 @@ RUN apk --update --no-cache add \
         curl \
         dumb-init \
         libressl \
-        qt5-qtbase \
+        qt6-qtbase \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
 
