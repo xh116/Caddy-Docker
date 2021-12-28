@@ -1,5 +1,3 @@
-
-   
 #!/bin/sh -e
 
 # Default configuration file
