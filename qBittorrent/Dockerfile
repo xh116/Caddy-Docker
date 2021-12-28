@@ -104,8 +104,8 @@ RUN apk --update --no-cache add \
         && rm -rf /tmp/* /var/cache/apk/*
 
 ENV HOME=/home/qbittorrent
-ENV PUID=1500
-ENV PGID=1500
+ENV PUID=500
+ENV PGID=500
 ENV WEBUI_PORT=8080   
  
 
@@ -125,4 +125,3 @@ VOLUME ["/config", "/torrents", "/downloads"]
 
 
 CMD ["qbittorrent-nox"]
-
