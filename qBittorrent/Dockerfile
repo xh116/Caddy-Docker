@@ -97,11 +97,9 @@ COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 # Install required packages
 RUN apk --update --no-cache add \
         bind-tools \
-        boost-dev  \
-        openssl-dev \
-        qt6-qtbase-dev \
-        qt6-qttools-dev \
-        zlib-dev \ 
+        openssl \
+        qt6-qtbase \
+        zlib \ 
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
 
