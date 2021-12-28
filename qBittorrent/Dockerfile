@@ -15,7 +15,7 @@ RUN set -x \
         git \
         libressl-dev \
         make \
-        qt5-qttools-dev 
+        qt6-qttools-dev 
 
     # Build lib rasterbar from source code (required by qBittorrent)
  RUN cd /tmp \      
