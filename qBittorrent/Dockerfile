@@ -129,7 +129,7 @@ RUN addgroup -g ${PGID} qbittorrent \
   && qbittorrent-nox --version
 
 
-EXPOSE 9881 9881/udp 8080
+EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
 
 
