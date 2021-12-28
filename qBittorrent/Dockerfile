@@ -113,10 +113,10 @@ COPY qBittorrent/entrypoint.sh /
 RUN chmod a+x /usr/bin/qbittorrent-nox \
   && chmod a+x /entrypoint.sh \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
-  && mkdir -p /home/qbittorrent/.local/share/data/qBittorrent \
+  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/data/qBittorrent /data       
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /data       
   
   
 ENV HOME=/home/qbittorrent
@@ -135,4 +135,4 @@ VOLUME ["/config", "/data", "/downloads"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["qbittorrent-nox", "--webui-port=$WEBUI_PORT"]
+CMD ["qbittorrent-nox"]
