@@ -117,15 +117,17 @@ RUN chmod a+x /usr/bin/qbittorrent-nox \
   && mkdir /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
   && ln -s /home/qbittorrent/.local/share/data/qBittorrent /data       
+  
+  
+ENV HOME=/home/qbittorrent
+ENV PUID=1500
+ENV PGID=1500
+ENV WEBUI_PORT=8080     
 
 RUN addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && qbittorrent-nox --version
 
-ENV HOME=/home/qbittorrent
-ENV PUID=1500
-ENV PGID=1500
-ENV WEBUI_PORT=8080   
 
 EXPOSE 9881 9881/udp 8080
 VOLUME ["/config", "/data", "/downloads"]
