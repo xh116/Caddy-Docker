@@ -13,6 +13,7 @@ if [ ! -f /config/qBittorrent.conf ]; then
   cat > /config/qBittorrent.conf <<EOL
 
 [Preferences]
+Connection\PortRangeMin=9881
 General\Locale=C
 WebUI\Enabled=true
 WebUI\Address=*
@@ -20,6 +21,7 @@ WebUI\ServerDomains=*
 WebUI\AlternativeUIEnabled=${ALT_WEBUI}
 WebUI\Port=${WEBUI_PORT}
 Downloads\SavePath=/downloads
+Downloads\TempPath=/downloads/incomplete/
 Downloads\ScanDirsV2=@Variant(\0\0\0\x1c\0\0\0\0)
 
 [LegalNotice]
@@ -30,6 +32,9 @@ ported_to_new_savepath_system=true
 
 EOL
 fi
+
+sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.conf
+
 
 
 # Allow groups to change files.
