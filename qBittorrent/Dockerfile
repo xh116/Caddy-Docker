@@ -117,8 +117,8 @@ RUN chmod a+x /usr/bin/qbittorrent-nox \
   
   
 ENV HOME=/home/qbittorrent
-ENV PUID=1500
-ENV PGID=1500
+ENV PUID=1000
+ENV PGID=1000
 ENV WEBUI_PORT=8080     
 
 RUN addgroup -g ${PGID} qbittorrent \
