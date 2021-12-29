@@ -13,8 +13,7 @@ if [ ! -f /config/qBittorrent.conf ]; then
   cat > /config/qBittorrent.conf <<EOL
 
 [Preferences]
-Connection\PortRangeMin=9881
-General\Locale=C
+Queueing\QueueingEnabled=true
 WebUI\Enabled=true
 WebUI\Address=*
 WebUI\ServerDomains=*
