@@ -20,6 +20,7 @@ WebUI\AlternativeUIEnabled=${ALT_WEBUI}
 WebUI\Port=${WEBUI_PORT}
 Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
+Downloads\TempPathEnabled=true
 Downloads\ScanDirsV2=@Variant(\0\0\0\x1c\0\0\0\0)
 
 [LegalNotice]
@@ -32,7 +33,9 @@ EOL
 fi
 
 sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.conf
-
+sed -i "s!Downloads\\\SavePath=.*!Downloads\\\SavePath=/downloads!g" /config/qBittorrent.conf
+sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g"  /config/qBittorrent.conf
+sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
 
 
 # Allow groups to change files.
