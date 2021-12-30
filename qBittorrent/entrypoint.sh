@@ -1,3 +1,5 @@
+#!/bin/sh 
+
 WEBUI_PORT=${WEBUI_PORT:-8080}
  
 
