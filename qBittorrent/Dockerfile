@@ -102,6 +102,7 @@ RUN chmod a+x /usr/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
   && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir /downloads \
+  && chmod go+rw -R /home/qbittorrent /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
   && ln -s /home/qbittorrent/.local/share/qBittorrent /data
     
