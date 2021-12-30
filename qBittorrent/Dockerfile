@@ -85,8 +85,6 @@ FROM alpine:latest
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 COPY qBittorrent/entrypoint.sh /
-COPY qBittorrent/qBittorrent.conf /default/qBittorrent.conf
-
 
 
 # Install required packages
