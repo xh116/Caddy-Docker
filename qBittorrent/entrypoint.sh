@@ -1,12 +1,8 @@
 #!/bin/sh -e
 
  
-# Default configuration file
 WEBUI_PORT=${WEBUI_PORT:-8080}
-ALT_WEBUI=${ALT_WEBUI:-false}
-if [ "${ALT_WEBUI}" != "true" ]; then
-  ALT_WEBUI=false
-fi
+ 
 
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
@@ -22,8 +18,8 @@ Bittorrent\AddTrackers=false
 Connection\PortRangeMin=9881
 Downloads\PreAllocation=true
 Downloads\StartInPause=false
-Downloads\SavePath=/downloads
 Downloads\TempPathEnabled=true
+Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 WebUI\Enabled=true
 WebUI\Address=*
@@ -39,13 +35,7 @@ sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g" 
 sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
 sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.conf
 
-
-echo "Fixing permissions..."
-chown qbittorrent:qbittorrent  /config \
-/data \
-/downloads 
-
-chown -R qbittorrent:qbittorrent "${HOME}" 
+ 
 # Allow groups to change files.
 umask 002
   
