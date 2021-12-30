@@ -35,7 +35,8 @@ sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g" 
 sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
 sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.conf
 
- 
+chown qbittorrent:qbittorrent /config/qBittorrent.conf
+
 # Allow groups to change files.
 umask 002
   
