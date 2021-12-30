@@ -30,11 +30,10 @@ sed -i "s!Downloads\\\SavePath=.*!Downloads\\\SavePath=/downloads!g" /config/qBi
 sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g"  /config/qBittorrent.conf
 sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
 
-chown qbittorrent:qbittorrent  /config/qBittorrent.conf
+chown qbittorrent:qbittorrent  /config \
+/data
+/downloads 
 
-
-# Allow groups to change files.
-umask 002
-  
+chown -R qbittorrent:qbittorrent  "${HOME}"
   
 exec "$@"
