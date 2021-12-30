@@ -58,7 +58,8 @@ sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /c
 sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.conf
 
 echo "Fixing perms..."
-chown qbittorrent:qbittorrent /downloads/incomplete \
+chown qbittorrent:qbittorrent /config/qBittorrent.conf \
+   /downloads/incomplete \
    /config \
    /data 
 
