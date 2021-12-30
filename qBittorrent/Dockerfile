@@ -106,7 +106,7 @@ ENV HOME="/home/qbittorrent" \
 
 RUN set -x \
     # Add non-root user
-  && adduser -S -D -u $PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
+  && adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
   && chmod a+x /usr/bin/qbittorrent-nox \
   && chmod a+x /entrypoint.sh \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
