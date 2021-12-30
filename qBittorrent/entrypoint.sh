@@ -53,7 +53,7 @@ chown qbittorrent:qbittorrent  /config \
 /data \
 /downloads 
 
-chown -R qbittorrent:qbittorrent "${QBITTORRENT_HOME}" /var/log/qbittorrent
+chown -R qbittorrent:qbittorrent "${HOME}" /var/log/qbittorrent
 
 # Allow groups to change files.
 umask 002
