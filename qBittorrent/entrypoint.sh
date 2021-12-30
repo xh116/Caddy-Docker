@@ -1,34 +1,12 @@
 #!/bin/sh -e
 
-if [ -n "${PGID}" ] && [ "${PGID}" != "$(id -g qbittorrent)" ]; then
-  echo "Switching to PGID ${PGID}..."
-  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*/qbittorrent:\1:${PGID}/" /etc/group
-  sed -i -e "s/^qbittorrent:\([^:]*\):\([0-9]*\):[0-9]*/qbittorrent:\1:\2:${PGID}/" /etc/passwd
-fi
-if [ -n "${PUID}" ] && [ "${PUID}" != "$(id -u qbittorrent)" ]; then
-  echo "Switching to PUID ${PUID}..."
-  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*:\([0-9]*\)/qbittorrent:\1:${PUID}:\2/" /etc/passwd
-fi
-
+ 
+# Default configuration file
 WEBUI_PORT=${WEBUI_PORT:-8080}
-
-
-echo "Creating folders..."
-mkdir -p  /config \
-   /data \
-   /downloads \
-  /downloads/incomplete \
-  ${QBITTORRENT_HOME}/.config \
-  ${QBITTORRENT_HOME}/.local/share \
-  /var/log/qbittorrent
-if [ ! -e "${QBITTORRENT_HOME}/.config/qBittorrent" ]; then
-  ln -s  /config "${QBITTORRENT_HOME}/.config/qBittorrent"
+ALT_WEBUI=${ALT_WEBUI:-false}
+if [ "${ALT_WEBUI}" != "true" ]; then
+  ALT_WEBUI=false
 fi
-if [ ! -e "${QBITTORRENT_HOME}/.local/share/qBittorrent" ]; then
-  ln -s /data "${QBITTORRENT_HOME}/.local/share/qBittorrent"
-fi
-
-
 
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
@@ -54,6 +32,8 @@ Downloads\TempPath=/downloads/incomplete
 WebUI\Enabled=true
 WebUI\Address=*
 WebUI\Port=${WEBUI_PORT}
+WebUI\AlternativeUIEnabled=${ALT_WEBUI}
+
 
 EOL
 fi
@@ -72,6 +52,10 @@ echo "Fixing permissions..."
 chown qbittorrent:qbittorrent  /config \
 /data \
 /downloads 
+
 chown -R qbittorrent:qbittorrent "${QBITTORRENT_HOME}" /var/log/qbittorrent
+
+# Allow groups to change files.
+umask 002
   
 exec "$@"
