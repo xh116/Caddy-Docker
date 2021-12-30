@@ -13,7 +13,7 @@ WebUI\Enabled=true
 WebUI\Address=*
 WebUI\ServerDomains=*
 WebUI\Port=${WEBUI_PORT}
-Connection\PortRangeMin=6881
+Connection\PortRangeMin=9881
 Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 Downloads\TempPathEnabled=true
@@ -29,6 +29,8 @@ sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.con
 sed -i "s!Downloads\\\SavePath=.*!Downloads\\\SavePath=/downloads!g" /config/qBittorrent.conf
 sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g"  /config/qBittorrent.conf
 sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
+
+chown qbittorrent:qbittorrent  /config/qBittorrent.conf
 
 
 # Allow groups to change files.
