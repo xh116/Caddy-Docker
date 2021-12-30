@@ -103,8 +103,7 @@ ENV WEBUI_PORT="8080" \
   PGID="500" 
  
 RUN chmod a+x /entrypoint.sh \
-  && addgroup -g ${PGID} qbittorrent \
-  && adduser -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
+  && adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent 
   && mkdir -p ~/.config/qBittorrent \
   && mkdir -p ~/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete  \
