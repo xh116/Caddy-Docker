@@ -42,7 +42,11 @@ sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g" 
 sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
 
 
-# Allow groups to change files.
-umask 002
-
+#change permissions 
+chown qbittorrent:qbittorrent /data \
+  /config \
+  /downloads \
+  /downloads/incomplete 
+  
+  
 exec "$@"
