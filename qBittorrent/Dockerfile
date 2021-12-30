@@ -98,7 +98,7 @@ RUN apk --update --no-cache add \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
         
-ENV WEBUI_PORT="8080"
+ENV WEBUI_PORT="8080" \
   PUID="500" \
   PGID="500" 
  
