@@ -102,7 +102,9 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
   WEBUI_PORT="8080" \
   PUID="500" \
   PGID="500" 
- 
+
+USER qbittorrent
+
 RUN chmod a+x /entrypoint.sh \
   && addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
