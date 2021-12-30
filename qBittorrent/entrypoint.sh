@@ -13,6 +13,7 @@ WebUI\Enabled=true
 WebUI\Address=*
 WebUI\ServerDomains=*
 WebUI\Port=${WEBUI_PORT}
+Connection\PortRangeMin=6881
 Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 Downloads\TempPathEnabled=true
