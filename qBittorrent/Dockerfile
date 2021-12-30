@@ -93,6 +93,7 @@ RUN apk --update --no-cache add \
         qt6-qtbase \
         zlib \
         tzdata \
+        dumb-init \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
   
@@ -102,15 +103,13 @@ COPY qBittorrent/entrypoint.sh /
 
 RUN chmod a+x /usr/bin/qbittorrent-nox \
   && chmod a+x /entrypoint.sh \
-  && mkdir -p /home/qbittorrent/.config/qBittorrent \
-  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
-  && mkdir /downloads \
-  && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/qBittorrent /data
-    
-ENV HOME=/home/qbittorrent
-ENV PUID=1000
-ENV PGID=1000
+  &&  mkdir -p ~/.config/qBittorrent \
+  && mkdir -p ~/.local/share/qBittorrent \
+  &&  mkdir -p /downloads/incomplete  \
+  && ln -s ~/.config/qBittorrent /config \
+  &&  ln -s ~/.local/share/qBittorrent /data     
+  
+
 ENV WEBUI_PORT=8080
 
 RUN addgroup -g ${PGID} qbittorrent \
@@ -124,5 +123,5 @@ VOLUME ["/config", "/data", "/downloads"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["qbittorrent-nox"]
+CMD ["dumb-init", "qbittorrent-nox"]
 
