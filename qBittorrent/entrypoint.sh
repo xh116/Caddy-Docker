@@ -16,7 +16,7 @@ if [ ! -f /config/qBittorrent.conf ]; then
 ported_to_new_savepath_system=true
 
 [BitTorrent]
-Session\Port=38043
+Session\Port=59881
 Session\QueueingSystemEnabled=true
 
 [Preferences]
