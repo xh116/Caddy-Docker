@@ -106,11 +106,11 @@ ENV WEBUI_PORT="8080" \
  
 RUN chmod a+x /entrypoint.sh \
   && adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
-  && mkdir -p ~/.config/qBittorrent \
-  && mkdir -p ~/.local/share/qBittorrent \
+  && mkdir -p /home/qbittorrent/.config/qBittorrent \
+  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete  \
-  && ln -s ~/.config/qBittorrent /config \
-  && ln -s ~/.local/share/qBittorrent /data \
+  && ln -s /home/qbittorrent/.config/qBittorrent /config \
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /data \
   && qbittorrent-nox --version
   
 
