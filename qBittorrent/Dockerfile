@@ -28,28 +28,23 @@ RUN set -x \
     zlib-dev \
     qt6-qtsvg-dev
 
-
-
-
-  # Build Ninja from source
-RUN cd /tmp \ 
+# Build Ninja from source
+RUN cd /tmp \
 && git clone --shallow-submodules --recurse-submodules https://github.com/ninja-build/ninja.git  /tmp/ninja \
 && cd /tmp/ninja \
 && cmake -Wno-dev -B build  \
     -D CMAKE_CXX_STANDARD=17 \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
 && cmake --build build \
-&& cmake --install build 
-
+&& cmake --install build
 
   #Download boost
-RUN cd /tmp \ 
+RUN cd /tmp \
 && curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz -o "/tmp/boost_1_77_0.tar.gz" \
 && tar xf "/tmp/boost_1_77_0.tar.gz" -C "/tmp"
 
-
     # Build lib rasterbar from source code (required by qBittorrent)
- RUN cd /tmp \      
+ RUN cd /tmp \
  && LIBTORRENT_RASTERBAR_URL=$(curl -sSL https://api.github.com/repos/arvidn/libtorrent/releases/latest | grep -E 'browser_download_url.*libtorrent-rasterbar'  | head -n 1 | cut -d '"' -f 4) \
  && mkdir /tmp/libtorrent-rasterbar \
  && curl -sSL $LIBTORRENT_RASTERBAR_URL | tar xzC /tmp/libtorrent-rasterbar \
@@ -63,12 +58,10 @@ RUN cd /tmp \
  && cmake --build build \
  && cmake --install build \
  && mkdir /lib64 \
- && cp -P /usr/local/lib/libtorrent-rasterbar.so*  /lib64 
+ && cp -P /usr/local/lib/libtorrent-rasterbar.so*  /lib64
  
-
-
     # Build qBittorrent from source code
- RUN cd /tmp \   
+ RUN cd /tmp \
  && git clone https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent \
  && cd /tmp/qbittorrent \
 && cmake -Wno-dev -G Ninja -B build \
@@ -89,23 +82,20 @@ RUN cd /tmp \
 
 FROM alpine:latest
 
-
 # Install required packages
 RUN apk --update --no-cache add \
         bind-tools \
         openssl \
         qt6-qtbase \
-        zlib \ 
+        zlib \
         tzdata \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
 
-
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 # Default configuration file.
-COPY qBittorrent/entrypoint.sh / 
-
+COPY qBittorrent/entrypoint.sh /
 
 RUN chmod a+x /usr/bin/qbittorrent-nox \
   && chmod a+x /entrypoint.sh \
@@ -113,13 +103,12 @@ RUN chmod a+x /usr/bin/qbittorrent-nox \
   && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir /downloads \
   && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/qBittorrent /data       
-  
-  
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /data
+    
 ENV HOME=/home/qbittorrent
 ENV PUID=1000
 ENV PGID=1000
-ENV WEBUI_PORT=8080     
+ENV WEBUI_PORT=8080
 
 RUN addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
