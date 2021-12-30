@@ -96,19 +96,27 @@ RUN apk --update --no-cache add \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
   
-ENV QBITTORRENT_HOME="/home/qbittorrent" \
-  TZ="UTC" \
-  PUID="1000" \
-  PGID="1000" \
-  WEBUI_PORT="8080"
-  
-COPY qBittorrent/entrypoint.sh /entrypoint.sh
-  
-RUN chmod a+x /entrypoint.sh \
-  && addgroup -g ${PGID} qbittorrent \
-  && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
+COPY --from=builder /lib64 /usr/lib/
+COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
+COPY qBittorrent/entrypoint.sh /
+
+RUN chmod a+x /usr/bin/qbittorrent-nox \
+  && chmod a+x /entrypoint.sh \
+  && mkdir -p /home/qbittorrent/.config/qBittorrent \
+  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
+  && mkdir /downloads \
+  && ln -s /home/qbittorrent/.config/qBittorrent /config \
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /data
+    
+ENV HOME=/home/qbittorrent
+ENV PUID=1000
+ENV PGID=1000
+ENV WEBUI_PORT=8080
+
+RUN addgroup -g ${PGID} qbittorrent \
+  && adduser -D -h ${HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && qbittorrent-nox --version
-  
+
 
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
@@ -116,9 +124,5 @@ VOLUME ["/config", "/data", "/downloads"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["/usr/bin/qbittorrent-nox"]
-
-HEALTHCHECK --interval=10s --timeout=10s --start-period=20s \
-  CMD curl --fail http://127.0.0.1:${WEBUI_PORT}/api/v2/app/version || exit 1
-
+CMD ["qbittorrent-nox"]
 
