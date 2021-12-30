@@ -103,11 +103,11 @@ COPY qBittorrent/entrypoint.sh /
 
 RUN chmod a+x /usr/bin/qbittorrent-nox \
   && chmod a+x /entrypoint.sh \
-  &&  mkdir -p ~/.config/qBittorrent \
+  && mkdir -p ~/.config/qBittorrent \
   && mkdir -p ~/.local/share/qBittorrent \
-  &&  mkdir -p /downloads/incomplete  \
+  && mkdir -p /downloads/incomplete  \
   && ln -s ~/.config/qBittorrent /config \
-  &&  ln -s ~/.local/share/qBittorrent /data     
+  && ln -s ~/.local/share/qBittorrent /data     
   
 
 ENV WEBUI_PORT=8080
@@ -120,8 +120,6 @@ RUN addgroup -g ${PGID} qbittorrent \
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
 
+ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 
-ENTRYPOINT ["/entrypoint.sh"]
-
-CMD ["dumb-init", "qbittorrent-nox"]
-
+CMD ["qbittorrent-nox"]
