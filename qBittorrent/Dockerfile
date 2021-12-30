@@ -81,9 +81,10 @@ RUN cd /tmp \
 
 
 FROM alpine:latest
-
+  
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
+COPY qBittorrent/entrypoint.sh /
 
 
 # Install required packages
@@ -96,13 +97,14 @@ RUN apk --update --no-cache add \
         dumb-init \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
-  
-COPY --from=builder /lib64 /usr/lib/
-COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-COPY qBittorrent/entrypoint.sh /
-
-RUN chmod a+x /usr/bin/qbittorrent-nox \
-  && chmod a+x /entrypoint.sh \
+        
+ENV WEBUI_PORT="8080"
+  PUID="500" \
+  PGID="500" 
+ 
+RUN chmod a+x /entrypoint.sh \
+  && addgroup -g ${PGID} qbittorrent \
+  && adduser -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && mkdir -p ~/.config/qBittorrent \
   && mkdir -p ~/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete  \
@@ -110,8 +112,6 @@ RUN chmod a+x /usr/bin/qbittorrent-nox \
   && ln -s ~/.local/share/qBittorrent /data \
   && qbittorrent-nox --version
   
-
-ENV WEBUI_PORT=8080
 
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
