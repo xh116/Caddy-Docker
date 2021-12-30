@@ -100,12 +100,14 @@ RUN apk --update --no-cache add \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
         
-ENV WEBUI_PORT="8080" \
+ENV QBITTORRENT_HOME="/home/qbittorrent" \
+  WEBUI_PORT="8080" \
   PUID="500" \
   PGID="500" 
  
 RUN chmod a+x /entrypoint.sh \
-  && adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
+  && addgroup -g ${PGID} qbittorrent \
+  && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && mkdir -p /home/qbittorrent/.config/qBittorrent \
   && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete  \
