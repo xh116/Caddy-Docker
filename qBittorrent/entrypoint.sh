@@ -10,6 +10,8 @@ if [ -n "${PUID}" ] && [ "${PUID}" != "$(id -u qbittorrent)" ]; then
   sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*:\([0-9]*\)/qbittorrent:\1:${PUID}:\2/" /etc/passwd
 fi
 
+WEBUI_PORT=${WEBUI_PORT:-8080}
+
 
 echo "Creating folders..."
 mkdir -p  /config \
