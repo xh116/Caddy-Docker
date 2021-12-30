@@ -118,4 +118,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/usr/bin/qbittorrent-nox"]
 
+HEALTHCHECK --interval=10s --timeout=10s --start-period=20s \
+  CMD curl --fail http://127.0.0.1:${WEBUI_PORT}/api/v2/app/version || exit 1
+
 
