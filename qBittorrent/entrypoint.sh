@@ -11,6 +11,13 @@ fi
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
   cat > /config/qBittorrent.conf <<EOL
+  
+[General]
+ported_to_new_savepath_system=true
+
+[BitTorrent]
+Session\Port=38043
+Session\QueueingSystemEnabled=true
 
 [Preferences]
 WebUI\Enabled=true
@@ -25,9 +32,6 @@ Downloads\ScanDirsV2=@Variant(\0\0\0\x1c\0\0\0\0)
 
 [LegalNotice]
 Accepted=true
-
-[General]
-ported_to_new_savepath_system=true
 
 EOL
 fi
