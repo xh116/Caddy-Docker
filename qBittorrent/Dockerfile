@@ -84,7 +84,6 @@ FROM alpine:latest
   
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-COPY qBittorrent/entrypoint.sh /
 
 
 # Install required packages
@@ -103,18 +102,12 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
   PUID="500" \
   PGID="500" 
 
-USER qbittorrent
+COPY qBittorrent/entrypoint.sh /
 
 RUN chmod a+x /entrypoint.sh \
   && addgroup -g ${PGID} qbittorrent \
   && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
-  && mkdir -p /home/qbittorrent/.config/qBittorrent \
-  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
-  && mkdir -p /downloads/incomplete  \
-  && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/qBittorrent /data \
   && qbittorrent-nox --version
-  
 
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
