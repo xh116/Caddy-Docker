@@ -32,4 +32,6 @@ EOL
     chown $PUID:$PGID /config/qBittorrent.conf
 fi
 
+chown -R qbittorrent:qbittorrent /home/qbittorrent
+
 exec su-exec qbittorrent:qbittorrent "$@"
