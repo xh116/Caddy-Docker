@@ -81,10 +81,6 @@ RUN cd /tmp \
 
 
 FROM alpine:latest
-  
-COPY --from=builder /lib64 /usr/lib/
-COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-
 
 # Install required packages
 RUN apk --update --no-cache add \
@@ -95,22 +91,38 @@ RUN apk --update --no-cache add \
         tzdata \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
-        
-ENV QBITTORRENT_HOME="/home/qbittorrent" \
-  WEBUI_PORT="8080" \
-  PUID="500" \
-  PGID="500" 
 
-COPY qBittorrent/entrypoint.sh /
+COPY --from=builder /lib64 /usr/lib/
+COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
+# Default configuration file.
+COPY qBittorrent/entrypoint.sh /entrypoint.sh
 
-RUN chmod a+x /entrypoint.sh \
-  && addgroup -g ${PGID} qbittorrent \
-  && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
-  && qbittorrent-nox --version
+  
+ENV HOME="/home/qbittorrent" \
+  TZ="UTC" \
+  PUID="1000" \
+  PGID="1000" \
+  WEBUI_PORT="8080"
 
+RUN set -x \
+    # Add non-root user
+  && adduser -S -D -u $PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
+  && chmod a+x /usr/bin/qbittorrent-nox \
+  && chmod a+x /entrypoint.sh \
+  && mkdir -p /home/qbittorrent/.config/qBittorrent \
+  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
+  && mkdir -p /downloads/incomplete \
+  && chmod go+rw -R /home/qbittorrent /downloads \
+  && ln -s /home/qbittorrent/.config/qBittorrent /config \
+  && ln -s /home/qbittorrent/.local/share/qBittorrent /data \
+  && su qbittorrent -s /bin/sh -c 'qbittorrent-nox -v'
+
+
+USER qbittorrent
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
 
+
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["qbittorrent-nox"]
+CMD ["/usr/bin/qbittorrent-nox"]
