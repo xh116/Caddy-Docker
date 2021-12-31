@@ -84,10 +84,7 @@ FROM alpine:latest
 
 # Install required packages
 RUN apk --update --no-cache add \
-        bind-tools \
-        openssl \
         qt6-qtbase \
-        zlib \
         tzdata \
         mktorrent \
         dumb-init \
@@ -95,21 +92,14 @@ RUN apk --update --no-cache add \
 
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-# Default configuration file.
-COPY qBittorrent/entrypoint.sh /entrypoint.sh
-
-  
+ 
 ENV QBITTORRENT_HOME="/home/qbittorrent" \
   TZ="UTC" \
   PUID="1000" \
   PGID="1000" \
   WEBUI_PORT="8080"
 
-RUN set -x \
-    # Add non-root user
-  && adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
-  && chmod a+x /usr/bin/qbittorrent-nox \
-  && chmod a+x /entrypoint.sh \
+RUN adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
   && mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent \
   && mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete \
@@ -118,10 +108,11 @@ RUN set -x \
   && ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data \
   && su qbittorrent -s /bin/sh -c 'qbittorrent-nox -v'
 
+COPY qBittorrent/entrypoint.sh /
 
-EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
 
+EXPOSE 9881 9881/udp ${WEBUI_PORT}
 
 ENTRYPOINT ["dumb-init","/entrypoint.sh"]
 
