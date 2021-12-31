@@ -9,6 +9,10 @@ if [ ! -f /config/qBittorrent.conf ]; then
   
 [General]
 ported_to_new_savepath_system=true
+
+[LegalNotice]
+Accepted=true
+
 [Preferences]
 WebUI\Enabled=true
 WebUI\Address=*
@@ -17,8 +21,6 @@ Connection\PortRangeMin=6881
 Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 Downloads\TempPathEnabled=true
-[LegalNotice]
-Accepted=true
 EOL
 	chown -R qbittorrent:qbittorrent /downloads
 fi
