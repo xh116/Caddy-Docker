@@ -1,7 +1,14 @@
 #!/bin/sh -e
 
-getent group qbittorrent >/dev/null || addgroup -g ${PGID} qbittorrent
-getent passwd qbittorrent >/dev/null || adduser -S -D -u ${PUID} -G qbittorrent -g qbadmin -s /sbin/nologin qbittorrent
+if [ -n "${PGID}" ] && [ "${PGID}" != "$(id -g qbittorrent)" ]; then
+  echo "Switching to PGID ${PGID}..."
+  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*/qbittorrent:\1:${PGID}/" /etc/group
+  sed -i -e "s/^qbittorrent:\([^:]*\):\([0-9]*\):[0-9]*/qbittorrent:\1:\2:${PGID}/" /etc/passwd
+fi
+if [ -n "${PUID}" ] && [ "${PUID}" != "$(id -u qbittorrent)" ]; then
+  echo "Switching to PUID ${PUID}..."
+  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*:\([0-9]*\)/qbittorrent:\1:${PUID}:\2/" /etc/passwd
+fi
 
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
@@ -22,9 +29,14 @@ Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 Downloads\TempPathEnabled=true
 EOL
-	chown -R qbittorrent:qbittorrent /downloads
 fi
 
+echo "Fixing permissions..."
+chown qbittorrent:qbittorrent /data \
+  /config \
+  /downloads \
+  /downloads/incomplete 
+  
 chown -R qbittorrent:qbittorrent /home/qbittorrent
 
 exec su-exec qbittorrent:qbittorrent "$@"
