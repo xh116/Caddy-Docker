@@ -1,32 +1,9 @@
 #!/bin/sh 
-
-
-if [ -n "${PGID}" ] && [ "${PGID}" != "$(id -g qbittorrent)" ]; then
-  echo "Switching to PGID ${PGID}..."
-  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*/qbittorrent:\1:${PGID}/" /etc/group
-  sed -i -e "s/^qbittorrent:\([^:]*\):\([0-9]*\):[0-9]*/qbittorrent:\1:\2:${PGID}/" /etc/passwd
-fi
-if [ -n "${PUID}" ] && [ "${PUID}" != "$(id -u qbittorrent)" ]; then
-  echo "Switching to PUID ${PUID}..."
-  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*:\([0-9]*\)/qbittorrent:\1:${PUID}:\2/" /etc/passwd
-fi
+ 
 
 WEBUI_PORT=${WEBUI_PORT:-8080}
 
-echo "Creating folders..."
-mkdir -p /downloads/incomplete \
-  /config \
-  /data  \
-  ${QBITTORRENT_HOME}/.config \
-  ${QBITTORRENT_HOME}/.local/share \
-  /var/log/qbittorrent
-if [ ! -e "${QBITTORRENT_HOME}/.config/qBittorrent" ]; then
-  ln -s /config "${QBITTORRENT_HOME}/.config/qBittorrent"
-fi
-if [ ! -e "${QBITTORRENT_HOME}/.local/share/qBittorrent" ]; then
-  ln -s /data "${QBITTORRENT_HOME}/.local/share/qBittorrent"
-fi
- 
+
 
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
@@ -56,12 +33,7 @@ sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g" 
 sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
 sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.conf
 
-echo "Fixing perms..."
-chown qbittorrent:qbittorrent /config/qBittorrent.conf \
-   /downloads/incomplete \
-   /config \
-   /data 
+ 
+umask 002
 
-chown -R qbittorrent:qbittorrent "${QBITTORRENT_HOME}"
-  
 exec "$@"
