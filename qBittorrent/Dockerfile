@@ -111,8 +111,6 @@ VOLUME ["/config", "/data", "/downloads" ]
 
 EXPOSE 8080 6881/tcp 6881/udp
 
-USER qbittorrent
-
 ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 
 CMD qbittorrent-nox --webui-port=$WEBUI_PORT
