@@ -112,6 +112,8 @@ COPY qBittorrent/entrypoint.sh /
 
 VOLUME ["/config", "/data", "/downloads"]
 
+USER qbittorrent
+
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 
 ENTRYPOINT ["dumb-init","/entrypoint.sh"]
