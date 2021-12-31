@@ -94,19 +94,22 @@ RUN apk --update --no-cache add \
         mktorrent \
         dumb-init && \
         rm -rf /tmp/* /var/cache/apk/*
+
+ENV QBITTORRENT_HOME="/home/qbittorrent" \
+  WEBUI_PORT="8080" \
+  PUID="1024" \
+  PGID="1024"
      
 RUN chmod a+x /usr/bin/qbittorrent-nox && \
+   chmod a+x /entrypoint.sh && \
+   addgroup -g ${PGID} qbittorrent && \
+   adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent && \
    mkdir -p /home/qbittorrent/.config/qBittorrent && \
    mkdir -p /home/qbittorrent/.local/share/qBittorrent && \
    mkdir -p /downloads/incomplete && \
    ln -s /home/qbittorrent/.config/qBittorrent /config  && \
    ln -s /home/qbittorrent/.local/share/qBittorrent /data  
-
-ENV HOME="/home/qbittorrent" \
-  WEBUI_PORT="8080" \
-  PUID="1024" \
-  PGID="1024"
-  
+   
 VOLUME ["/config", "/data", "/downloads" ]
 
 EXPOSE 8080 6881/tcp 6881/udp
