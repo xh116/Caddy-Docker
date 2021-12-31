@@ -104,11 +104,13 @@ RUN chmod a+x  /usr/bin/qbittorrent-nox && \
 
 ENV WEBUI_PORT="8080" \
   PUID="1024" \
-  PGID="1024"   
+  PGID="1024"
   
 VOLUME ["/config", "/data", "/downloads" ]
 
 EXPOSE 8080 6881/tcp 6881/udp
+
+USER qbittorrent
 
 ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 
