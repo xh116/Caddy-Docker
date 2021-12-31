@@ -99,7 +99,11 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
   PGID="1000" \
   WEBUI_PORT="8080"
 
-RUN adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
+COPY qBittorrent/entrypoint.sh /
+
+
+RUN chmod a+x /entrypoint.sh \
+  && adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
   && mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent \
   && mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete \
@@ -108,7 +112,6 @@ RUN adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
   && ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data \
   && su qbittorrent -s /bin/sh -c 'qbittorrent-nox -v'
 
-COPY qBittorrent/entrypoint.sh /
 
 VOLUME ["/config", "/data", "/downloads"]
 
