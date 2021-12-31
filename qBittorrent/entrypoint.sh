@@ -16,10 +16,11 @@ then
 	cp /tmp/qBittorrent.conf /config/qBittorrent.conf
 fi
 
-chown ${PUID}:${PGID} /data \
+chown qbittorrent:qbittorrent /data \
    /config \
    /downloads 
-chown -R ${PUID}:${PGID} /home/qbittorrent
+   
+chown -R qbittorrent:qbittorrent /home/qbittorrent
 
 # Allow groups to change files.
 umask 002
