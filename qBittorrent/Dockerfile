@@ -90,19 +90,20 @@ COPY qBittorrent/entrypoint.sh /entrypoint.sh
 # Install required packages
 RUN apk --update --no-cache add \
         qt6-qtbase \
-        shadow \
+        su-exec \
         mktorrent \
-        dumb-init \
-        && rm -rf /tmp/* /var/cache/apk/*
+        dumb-init && \
+        rm -rf /tmp/* /var/cache/apk/*
+     
+RUN chmod a+x /usr/bin/qbittorrent-nox && \
+   mkdir -p /home/qbittorrent/.config/qBittorrent && \
+   mkdir -p /home/qbittorrent/.local/share/qBittorrent && \
+   mkdir -p /downloads/incomplete && \
+   ln -s /home/qbittorrent/.config/qBittorrent /config  && \
+   ln -s /home/qbittorrent/.local/share/qBittorrent /data  
 
-RUN chmod a+x  /usr/bin/qbittorrent-nox && \
-    mkdir -p ~/.config/qBittorrent && \
-    mkdir -p ~/.local/share/qBittorrent && \
-    mkdir -p /downloads/incomplete  && \
-    ln -s ~/.config/qBittorrent /config && \
-    ln -s ~/.local/share/qBittorrent /data 
-
-ENV WEBUI_PORT="8080" \
+ENV HOME="/home/qbittorrent" \
+  WEBUI_PORT="8080" \
   PUID="1024" \
   PGID="1024"
   
@@ -114,4 +115,4 @@ USER qbittorrent
 
 ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 
-CMD ["/qbittorrent-nox"]
+CMD qbittorrent-nox --webui-port=$WEBUI_PORT
