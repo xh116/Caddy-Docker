@@ -98,7 +98,7 @@ COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
 COPY qBittorrent/entrypoint.sh /entrypoint.sh
 
   
-ENV HOME="/home/qbittorrent" \
+ENV QBITTORRENT_HOME="/home/qbittorrent" \
   TZ="UTC" \
   PUID="1000" \
   PGID="1000" \
@@ -109,12 +109,12 @@ RUN set -x \
   && adduser -S -D -u $PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
   && chmod a+x /usr/bin/qbittorrent-nox \
   && chmod a+x /entrypoint.sh \
-  && mkdir -p /home/qbittorrent/.config/qBittorrent \
-  && mkdir -p /home/qbittorrent/.local/share/qBittorrent \
+  && mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent \
+  && mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete \
-  && chmod go+rw -R /home/qbittorrent /downloads \
-  && ln -s /home/qbittorrent/.config/qBittorrent /config \
-  && ln -s /home/qbittorrent/.local/share/qBittorrent /data \
+  && chmod go+rw -R ${QBITTORRENT_HOME} /downloads \
+  && ln -s ${QBITTORRENT_HOME}/.config/qBittorrent /config \
+  && ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data \
   && su qbittorrent -s /bin/sh -c 'qbittorrent-nox -v'
 
 
