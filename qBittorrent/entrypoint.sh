@@ -46,7 +46,6 @@ Downloads\TempPath=/downloads/incomplete
 WebUI\Enabled=true
 WebUI\Address=*
 WebUI\Port=${WEBUI_PORT}
-WebUI\AlternativeUIEnabled=${ALT_WEBUI}
 EOL
 fi
 
