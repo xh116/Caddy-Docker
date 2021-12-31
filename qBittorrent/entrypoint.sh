@@ -31,3 +31,5 @@ Accepted=true
 EOL
     chown $PUID:$PGID /config/qBittorrent.conf
 fi
+
+exec su-exec qbittorrent:qbittorrent "$@"
