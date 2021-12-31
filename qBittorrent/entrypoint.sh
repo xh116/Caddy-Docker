@@ -29,13 +29,13 @@ Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 Downloads\TempPathEnabled=true
 EOL
+ chown qbittorrent:qbittorrent /config/qBittorrent.conf
 fi
 
 echo "Fixing permissions..."
 chown qbittorrent:qbittorrent /data \
   /config \
-  /downloads \
-  /downloads/incomplete 
+  /downloads  
   
 chown -R qbittorrent:qbittorrent /home/qbittorrent
 
