@@ -90,6 +90,7 @@ RUN apk --update --no-cache add \
         zlib \
         tzdata \
         mktorrent \
+        dumb-init \
         && rm -rf /tmp/* /var/cache/apk/*
 
 COPY --from=builder /lib64 /usr/lib/
@@ -123,6 +124,6 @@ EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
 
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["dumb-init","/entrypoint.sh"]
 
 CMD ["/usr/bin/qbittorrent-nox"]
