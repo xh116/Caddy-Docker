@@ -93,7 +93,6 @@ RUN apk --update --no-cache add \
         qt6-qtbase \
         zlib \
         tzdata \
-        dumb-init \
         mktorrent \
         && rm -rf /tmp/* /var/cache/apk/*
         
@@ -112,6 +111,6 @@ RUN chmod a+x /entrypoint.sh \
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
 
-ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["qbittorrent-nox"]
