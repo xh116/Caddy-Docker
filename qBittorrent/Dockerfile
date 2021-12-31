@@ -104,7 +104,8 @@ COPY qBittorrent/qBittorrent.conf /tmp/
 
 
 RUN chmod a+x /entrypoint.sh \
-  && adduser -S -D -u ${PUID} -g ${PGID} -s /sbin/nologin qbittorrent \
+  && addgroup -g ${PGID} qbittorrent \
+  && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
   && mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent \
   && mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent \
   && mkdir -p /downloads/incomplete \
