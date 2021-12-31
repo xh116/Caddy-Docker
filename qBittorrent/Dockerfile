@@ -85,7 +85,7 @@ FROM alpine:latest
 
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
-COPY entrypoint.sh /entrypoint.sh
+COPY qBittorrent/entrypoint.sh /entrypoint.sh
 
 # Install required packages
 RUN apk --update --no-cache add \
