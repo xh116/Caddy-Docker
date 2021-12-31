@@ -119,7 +119,6 @@ RUN set -x \
   && su qbittorrent -s /bin/sh -c 'qbittorrent-nox -v'
 
 
-USER qbittorrent
 EXPOSE 9881 9881/udp ${WEBUI_PORT}
 VOLUME ["/config", "/data", "/downloads"]
 
