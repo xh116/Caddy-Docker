@@ -1,16 +1,7 @@
-#!/bin/sh
+#!/bin/sh -e
 
-if ! id qbittorrent; then
-    echo "[WARNING] User not found. Maybe first bootstrap?"
-    echo "[INFO] Try to create user qbittorrent."
-    groupadd -g $PGID -o qbittorrent
-    useradd -d /config -u $PUID -g $PGID -o qbittorrent
-    if [ -d /config ]; then
-        echo "[INFO] Try to fix config folder permissions."
-        chown -R $PUID:$PGID /config
-    fi
-    echo "[INFO] User qbittorrent($PUID:$PGID) created."
-fi
+getent group qbittorrent >/dev/null || addgroup -g ${PGID} qbittorrent
+getent passwd qbittorrent >/dev/null || adduser -S -D -u ${PUID} -G qbittorrent -g qbadmin -s /sbin/nologin qbittorrent
 
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
@@ -29,7 +20,7 @@ Downloads\TempPathEnabled=true
 [LegalNotice]
 Accepted=true
 EOL
-    chown $PUID:$PGID /config/qBittorrent.conf
+	chown -R qbittorrent:qbittorrent /downloads
 fi
 
 chown -R qbittorrent:qbittorrent /home/qbittorrent
