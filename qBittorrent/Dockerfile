@@ -100,6 +100,7 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
   WEBUI_PORT="8080"
 
 COPY qBittorrent/entrypoint.sh /
+COPY qBittorrent/qBittorrent.conf /tmp/
 
 
 RUN chmod a+x /entrypoint.sh \
