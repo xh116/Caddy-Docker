@@ -82,45 +82,28 @@ RUN cd /tmp \
 
 FROM alpine:latest
 
+
+COPY --from=builder /lib64 /usr/lib/
+COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
+
 # Install required packages
 RUN apk --update --no-cache add \
         qt6-qtbase \
-        tzdata \
         mktorrent \
         dumb-init \
         && rm -rf /tmp/* /var/cache/apk/*
 
-COPY --from=builder /lib64 /usr/lib/
-COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
- 
-ENV QBITTORRENT_HOME="/home/qbittorrent" \
-  TZ="UTC" \
-  PUID="1000" \
-  PGID="1000" \
-  WEBUI_PORT="8080"
+RUN chmod a+x  /usr/bin/qbittorrent-nox && \
+    mkdir -p ~/.config/qBittorrent && \
+    mkdir -p ~/.local/share/qBittorrent && \
+    mkdir -p /downloads/incomplete  && \
+    ln -s ~/.config/qBittorrent /config && \
+    ln -s ~/.local/share/qBittorrent /data 
 
-COPY qBittorrent/entrypoint.sh /
-COPY qBittorrent/qBittorrent.conf /tmp/qBittorrent.conf
+VOLUME ["/config", "/data", "/downloads" ]
 
+EXPOSE 8080 6881/tcp 6881/udp
 
-RUN chmod a+x /entrypoint.sh \
-  && addgroup -g ${PGID} qbittorrent \
-  && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
-  && mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent \
-  && mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent \
-  && mkdir -p /downloads/incomplete \
-  && chmod go+rw -R ${QBITTORRENT_HOME} /downloads \
-  && ln -s ${QBITTORRENT_HOME}/.config/qBittorrent /config \
-  && ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data \
-  && su qbittorrent -s /bin/sh -c 'qbittorrent-nox -v'
+ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
 
-
-VOLUME ["/config", "/data", "/downloads"]
-
-USER qbittorrent
-
-EXPOSE 9881 9881/udp ${WEBUI_PORT}
-
-ENTRYPOINT ["dumb-init","/entrypoint.sh"]
-
-CMD ["/usr/bin/qbittorrent-nox"]
+CMD ["/qbittorrent-nox"]
