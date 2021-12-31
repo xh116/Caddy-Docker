@@ -1,9 +1,6 @@
-#!/bin/sh 
+#!/bin/sh -e
  
-
 WEBUI_PORT=${WEBUI_PORT:-8080}
-
-
 
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
@@ -32,7 +29,6 @@ sed -i "s!Downloads\\\SavePath=.*!Downloads\\\SavePath=/downloads!g" /config/qBi
 sed -i "s!Downloads\\\TempPath=.*!Downloads\\\TempPath=/downloads/incomplete!g"  /config/qBittorrent.conf
 sed -i "s!Downloads\\\TempPathEnabled=.*!Downloads\\\TempPathEnabled=true!g"  /config/qBittorrent.conf
 sed -i "s!WebUI\\\Port=.*!WebUI\\\Port=${WEBUI_PORT}!g"  /config/qBittorrent.conf
-
  
 umask 002
 
