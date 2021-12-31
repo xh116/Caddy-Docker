@@ -1,28 +1,33 @@
-#!/bin/sh -e
+#!/bin/sh
 
-if [ -n "${PGID}" ] && [ "${PGID}" != "$(id -g qbittorrent)" ]; then
-  echo "Switching to PGID ${PGID}..."
-  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*/qbittorrent:\1:${PGID}/" /etc/group
-  sed -i -e "s/^qbittorrent:\([^:]*\):\([0-9]*\):[0-9]*/qbittorrent:\1:\2:${PGID}/" /etc/passwd
-fi
-if [ -n "${PUID}" ] && [ "${PUID}" != "$(id -u qbittorrent)" ]; then
-  echo "Switching to PUID ${PUID}..."
-  sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*:\([0-9]*\)/qbittorrent:\1:${PUID}:\2/" /etc/passwd
-fi
-
-# Default configuration file
-if [ ! -f /config/qBittorrent.conf ]
-then
-	cp /tmp/qBittorrent.conf /config/qBittorrent.conf
+if ! id qbittorrent; then
+    echo "[WARNING] User not found. Maybe first bootstrap?"
+    echo "[INFO] Try to create user qbittorrent."
+    groupadd -g $PGID -o qbittorrent
+    useradd -d /config -u $PUID -g $PGID -o qbittorrent
+    if [ -d /config ]; then
+        echo "[INFO] Try to fix config folder permissions."
+        chown -R $PUID:$PGID /config
+    fi
+    echo "[INFO] User qbittorrent($PUID:$PGID) created."
 fi
 
-chown qbittorrent:qbittorrent /data \
-   /config \
-   /downloads 
-   
-chown -R qbittorrent:qbittorrent /home/qbittorrent
-
-# Allow groups to change files.
-umask 002
-
-exec "$@"
+if [ ! -f /config/qBittorrent.conf ]; then
+  echo "Initializing qBittorrent configuration..."
+  cat > /config/qBittorrent.conf <<EOL
+  
+[General]
+ported_to_new_savepath_system=true
+[Preferences]
+WebUI\Enabled=true
+WebUI\Address=*
+WebUI\ServerDomains=*
+Connection\PortRangeMin=6881
+Downloads\SavePath=/downloads
+Downloads\TempPath=/downloads/incomplete
+Downloads\TempPathEnabled=true
+[LegalNotice]
+Accepted=true
+EOL
+    chown $PUID:$PGID /config/qBittorrent.conf
+fi
