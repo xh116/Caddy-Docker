@@ -85,10 +85,12 @@ FROM alpine:latest
 
 COPY --from=builder /lib64 /usr/lib/
 COPY --from=builder /usr/local/bin/qbittorrent-nox /usr/bin/qbittorrent-nox
+COPY entrypoint.sh /entrypoint.sh
 
 # Install required packages
 RUN apk --update --no-cache add \
         qt6-qtbase \
+        shadow \
         mktorrent \
         dumb-init \
         && rm -rf /tmp/* /var/cache/apk/*
@@ -100,6 +102,10 @@ RUN chmod a+x  /usr/bin/qbittorrent-nox && \
     ln -s ~/.config/qBittorrent /config && \
     ln -s ~/.local/share/qBittorrent /data 
 
+ENV WEBUI_PORT="8080" \
+  PUID="1024" \
+  PGID="1024"   
+  
 VOLUME ["/config", "/data", "/downloads" ]
 
 EXPOSE 8080 6881/tcp 6881/udp
