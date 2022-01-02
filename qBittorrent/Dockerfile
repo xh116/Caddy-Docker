@@ -106,11 +106,11 @@ RUN chmod a+x /usr/bin/qbittorrent-nox && \
    chmod a+x /entrypoint.sh && \
    addgroup -g ${PGID} qbittorrent && \
    adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent && \
-   mkdir -p /home/qbittorrent/.config/qBittorrent && \
-   mkdir -p /home/qbittorrent/.local/share/qBittorrent && \
+   mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent && \
+   mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent && \
    mkdir -p /downloads/incomplete && \
-   ln -s /config /home/qbittorrent/.config/qBittorrent   && \
-   ln -s /data /home/qbittorrent/.local/share/qBittorrent 
+   ln -s ${QBITTORRENT_HOME}/.config/qBittorrent /config && \
+   ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data
    
 VOLUME ["/config", "/data", "/downloads" ]
 
