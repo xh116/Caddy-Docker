@@ -91,7 +91,8 @@ COPY qBittorrent/entrypoint.sh /entrypoint.sh
 RUN apk --update --no-cache add \
         qt6-qtbase \
         su-exec \
-        mktorrent \     
+        shadow \
+        mktorrent \
         tzdata && \
         cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
         apk del tzdata && \
@@ -101,20 +102,18 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
   WEBUI_PORT="8080" \
   PUID="1024" \
   PGID="1024"
-     
-RUN chmod a+x /entrypoint.sh && \
-   addgroup -g ${PGID} qbittorrent && \
-   adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent && \
-   mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent && \
-   mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent && \
-   mkdir -p /downloads/incomplete && \
-   ln -s ${QBITTORRENT_HOME}/.config/qBittorrent /config && \
-   ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data
-   
-VOLUME ["/config", "/data", "/downloads" ]
+ 
+RUN chmod a+x /entrypoint.sh \
+  && addgroup -g ${PGID} qbittorrent \
+  && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
+  && qbittorrent-nox --version
 
-EXPOSE 8080 6881/tcp 6881/udp
+EXPOSE 6881 6881/udp ${WEBUI_PORT}
+WORKDIR /data
+VOLUME [ "/data" ]
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "/usr/bin/qbittorrent-nox" ]
 
-CMD qbittorrent-nox --webui-port=$WEBUI_PORT
+HEALTHCHECK --interval=10s --timeout=10s --start-period=20s \
+  CMD curl --fail http://127.0.0.1:${WEBUI_PORT}/api/v2/app/version || exit 1
