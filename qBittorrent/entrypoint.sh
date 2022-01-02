@@ -12,29 +12,26 @@ fi
 
 if [ ! -f /config/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
-  cat > /config/qBittorrent.conf <<EOL
-  
+  cat > /config/qBittorrent.conf <<EOL  
 [General]
 ported_to_new_savepath_system=true
 
 [LegalNotice]
 Accepted=true
 
-[BitTorrent]
-Session\DefaultSavePath=/downloads
-Session\Port=6881
-Session\QueueingSystemEnabled=true
-
+[Meta]
+MigrationVersion=2
 
 [Preferences]
-WebUI\Enabled=true
-WebUI\Address=*
-WebUI\ServerDomains=*
-Queueing\QueueingEnabled=true
 Connection\PortRangeMin=6881
 Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 Downloads\TempPathEnabled=true
+Queueing\QueueingEnabled=true
+WebUI\Address=*
+WebUI\Enabled=true
+WebUI\Port=8081
+WebUI\ServerDomains=*
 EOL
  chown qbittorrent:qbittorrent /config/qBittorrent.conf
 fi
