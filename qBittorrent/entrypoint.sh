@@ -20,6 +20,10 @@ ported_to_new_savepath_system=true
 [LegalNotice]
 Accepted=true
 
+[BitTorrent]
+Session\DefaultSavePath=/downloads
+Session\Port=6881
+
 [Preferences]
 WebUI\Enabled=true
 WebUI\Address=*
