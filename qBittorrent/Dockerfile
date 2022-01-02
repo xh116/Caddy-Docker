@@ -103,17 +103,19 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
   PUID="1024" \
   PGID="1024"
  
-RUN chmod a+x /entrypoint.sh \
-  && addgroup -g ${PGID} qbittorrent \
-  && adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent \
-  && qbittorrent-nox --version
+RUN chmod a+x /entrypoint.sh && \
+   addgroup -g ${PGID} qbittorrent && \
+   adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent && \
+   mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent && \
+   mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent && \
+   mkdir -p /downloads/incomplete && \
+   ln -s ${QBITTORRENT_HOME}/.config/qBittorrent /config && \
+   ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data
+   
+VOLUME ["/config", "/data", "/downloads" ]
 
-EXPOSE 6881 6881/udp ${WEBUI_PORT}
-WORKDIR /data
-VOLUME [ "/data" ]
+EXPOSE 8080 6881/tcp 6881/udp
 
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "/usr/bin/qbittorrent-nox" ]
+ENTRYPOINT ["/entrypoint.sh"]
 
-HEALTHCHECK --interval=10s --timeout=10s --start-period=20s \
-  CMD curl --fail http://127.0.0.1:${WEBUI_PORT}/api/v2/app/version || exit 1
+CMD qbittorrent-nox --webui-port=$WEBUI_PORT
