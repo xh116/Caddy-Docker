@@ -51,11 +51,6 @@ RUN cd /tmp \
  && cd /tmp/libtorrent-rasterbar/* \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
-    -D CMAKE_CXX_STANDARD=17 \
-    -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    -D deprecated-functions=OFF \
-    -D BUILD_SHARED_LIBS=OFF \
-    -D static_runtime=ON \
     -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_INSTALL_LIBDIR="lib" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
