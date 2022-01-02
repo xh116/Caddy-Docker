@@ -23,6 +23,8 @@ Accepted=true
 [BitTorrent]
 Session\DefaultSavePath=/downloads
 Session\Port=6881
+Session\QueueingSystemEnabled=true
+
 
 [Preferences]
 WebUI\Enabled=true
