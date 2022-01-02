@@ -40,8 +40,8 @@ RUN cd /tmp \
 
   #Download boost
 RUN cd /tmp \
-&& curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz -o "/tmp/boost_1_76_0.tar.gz" \
-&& tar xf "/tmp/boost_1_76_0.tar.gz" -C "/tmp"
+&& curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.tar.gz -o "/tmp/boost_1_78_0.tar.gz" \
+&& tar xf "/tmp/boost_1_78_0.tar.gz" -C "/tmp"
 
     # Build lib rasterbar from source code (required by qBittorrent)
  RUN cd /tmp \
@@ -52,7 +52,7 @@ RUN cd /tmp \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_CXX_STANDARD=17 \
-    -D BOOST_INCLUDEDIR="/tmp/boost_1_76_0/" \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_INSTALL_LIBDIR="lib" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
  && cmake --build build \
@@ -70,7 +70,7 @@ RUN cd /tmp \
     -D GUI=OFF \
     -D CMAKE_BUILD_TYPE="release" \
     -D CMAKE_CXX_STANDARD=17 \
-    -D BOOST_INCLUDEDIR="/tmp/boost_1_76_0/" \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_CXX_STANDARD_LIBRARIES="/usr/lib/libexecinfo.so" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
 && cmake --build build \
