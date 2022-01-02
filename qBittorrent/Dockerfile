@@ -58,7 +58,7 @@ RUN cd /tmp \
     -D static_runtime=ON \
     -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_INSTALL_LIBDIR="lib" \
-    -D CMAKE_INSTALL_PREFIX="/usr/local" 
+    -D CMAKE_INSTALL_PREFIX="/usr/local" \
  && cmake --build build \
  && cmake --install build \
  && mkdir /lib64 \
