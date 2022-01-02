@@ -30,13 +30,12 @@ WebUI\Enabled=true
 WebUI\Port=8081
 WebUI\ServerDomains=*
 EOL
- chown qbittorrent:qbittorrent /config/qBittorrent.conf
 fi
 
 echo "Fixing permissions..."
 chown qbittorrent:qbittorrent /data \
   /config \
-  /downloads  
+  /downloads
   
 chown -R qbittorrent:qbittorrent /home/qbittorrent
 
