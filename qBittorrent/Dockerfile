@@ -26,7 +26,6 @@ RUN set -x \
     qt6-qtbase-dev \
     qt6-qttools-dev \
     zlib-dev \
-    asio-dev \
     qt6-qtsvg-dev
 
 # Build Ninja from source
@@ -53,6 +52,8 @@ RUN cd /tmp \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_CXX_STANDARD=17 \
+    -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -D deprecated-functions=OFF \
     -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_INSTALL_LIBDIR="lib" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
