@@ -102,8 +102,7 @@ ENV QBITTORRENT_HOME="/home/qbittorrent" \
   PUID="1024" \
   PGID="1024"
      
-RUN chmod a+x /usr/bin/qbittorrent-nox && \
-   chmod a+x /entrypoint.sh && \
+RUN chmod a+x /entrypoint.sh && \
    addgroup -g ${PGID} qbittorrent && \
    adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent && \
    mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent && \
