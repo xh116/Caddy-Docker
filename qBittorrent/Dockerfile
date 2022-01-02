@@ -40,7 +40,7 @@ RUN cd /tmp \
 
   #Download boost
 RUN cd /tmp \
-&& curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_77_0.tar.gz -o "/tmp/boost_1_76_0.tar.gz" \
+&& curl -sNLk https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz -o "/tmp/boost_1_76_0.tar.gz" \
 && tar xf "/tmp/boost_1_76_0.tar.gz" -C "/tmp"
 
     # Build lib rasterbar from source code (required by qBittorrent)
