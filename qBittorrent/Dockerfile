@@ -109,6 +109,7 @@ RUN chmod a+x /entrypoint.sh && \
    mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent && \
    mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent && \
    mkdir -p /downloads/incomplete && \
+   ln -s ${QBITTORRENT_HOME}/Downloads  /downloads && \
    ln -s ${QBITTORRENT_HOME}/.config/qBittorrent /config && \
    ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data
    
