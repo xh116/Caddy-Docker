@@ -19,9 +19,6 @@ ported_to_new_savepath_system=true
 [LegalNotice]
 Accepted=true
 
-[Meta]
-MigrationVersion=2
-
 [Preferences]
 Connection\PortRangeMin=6881
 Downloads\SavePath=/downloads
