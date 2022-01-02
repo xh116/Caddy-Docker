@@ -92,7 +92,10 @@ RUN apk --update --no-cache add \
         qt6-qtbase \
         su-exec \
         mktorrent \
-        dumb-init && \
+        dumb-init \
+        tzdata && \
+        cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+        apk del tzdata && \
         rm -rf /tmp/* /var/cache/apk/*
 
 ENV QBITTORRENT_HOME="/home/qbittorrent" \
