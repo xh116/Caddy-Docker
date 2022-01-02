@@ -109,8 +109,8 @@ RUN chmod a+x /usr/bin/qbittorrent-nox && \
    mkdir -p /home/qbittorrent/.config/qBittorrent && \
    mkdir -p /home/qbittorrent/.local/share/qBittorrent && \
    mkdir -p /downloads/incomplete && \
-   ln -s /home/qbittorrent/.config/qBittorrent /config  && \
-   ln -s /home/qbittorrent/.local/share/qBittorrent /data  
+   ln -s /config /home/qbittorrent/.config/qBittorrent   && \
+   ln -s /data /home/qbittorrent/.local/share/qBittorrent 
    
 VOLUME ["/config", "/data", "/downloads" ]
 
