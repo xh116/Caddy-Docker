@@ -91,8 +91,7 @@ COPY qBittorrent/entrypoint.sh /entrypoint.sh
 RUN apk --update --no-cache add \
         qt6-qtbase \
         su-exec \
-        mktorrent \
-        dumb-init \
+        mktorrent \     
         tzdata && \
         cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
         apk del tzdata && \
@@ -117,6 +116,6 @@ VOLUME ["/config", "/data", "/downloads" ]
 
 EXPOSE 8080 6881/tcp 6881/udp
 
-ENTRYPOINT ["dumb-init", "/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD qbittorrent-nox --webui-port=$WEBUI_PORT
