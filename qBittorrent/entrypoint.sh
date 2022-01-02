@@ -28,6 +28,7 @@ Session\Port=6881
 WebUI\Enabled=true
 WebUI\Address=*
 WebUI\ServerDomains=*
+Queueing\QueueingEnabled=true
 Connection\PortRangeMin=6881
 Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
