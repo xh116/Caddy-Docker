@@ -45,13 +45,11 @@ RUN cd /tmp \
 
     # Build lib rasterbar from source code (required by qBittorrent)
  RUN cd /tmp \
- && LIBTORRENT_RASTERBAR_URL=$(curl -sSL https://api.github.com/repos/arvidn/libtorrent/releases/latest | grep -E 'browser_download_url.*libtorrent-rasterbar'  | head -n 1 | cut -d '"' -f 4) \
- && mkdir /tmp/libtorrent-rasterbar \
- && curl -sSL $LIBTORRENT_RASTERBAR_URL | tar xzC /tmp/libtorrent-rasterbar \
- && cd /tmp/libtorrent-rasterbar/* \
+ && git clone --recurse-submodules https://github.com/arvidn/libtorrent.git /tmp/libtorrent-rasterbar \
+ && cd /tmp/libtorrent-rasterbar \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
-    -D CMAKE_CXX_STANDARD=20 \
+    -D CMAKE_CXX_STANDARD=17 \
     -D BOOST_INCLUDEDIR="/tmp/boost_1_78_0/" \
     -D CMAKE_INSTALL_LIBDIR="lib" \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
