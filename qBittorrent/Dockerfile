@@ -26,6 +26,7 @@ RUN set -x \
     qt6-qtbase-dev \
     qt6-qttools-dev \
     zlib-dev \
+    asio-dev \
     qt6-qtsvg-dev
 
 # Build Ninja from source
