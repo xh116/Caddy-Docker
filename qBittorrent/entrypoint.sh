@@ -25,7 +25,7 @@ Downloads\TempPathEnabled=true
 Queueing\QueueingEnabled=true
 WebUI\Address=*
 WebUI\Enabled=true
-WebUI\Port=8081
+WebUI\Port=8080
 WebUI\ServerDomains=*
 EOL
 fi
