@@ -10,9 +10,9 @@ if [ -n "${PUID}" ] && [ "${PUID}" != "$(id -u qbittorrent)" ]; then
   sed -i -e "s/^qbittorrent:\([^:]*\):[0-9]*:\([0-9]*\)/qbittorrent:\1:${PUID}:\2/" /etc/passwd
 fi
 
-if [ ! -f /config/qBittorrent.conf ]; then
+if [ ! -f  /home/qbittorrent/.config/qBittorrent/qBittorrent.conf ]; then
   echo "Initializing qBittorrent configuration..."
-  cat > /config/qBittorrent.conf <<EOL  
+  cat >  /home/qbittorrent/.config/qBittorrent/qBittorrent.conf <<EOL  
 [General]
 ported_to_new_savepath_system=true
 [LegalNotice]
