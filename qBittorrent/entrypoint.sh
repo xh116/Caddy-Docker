@@ -40,7 +40,6 @@ MigrationVersion=2
 
 [Preferences]
 Connection\PortRangeMin=6881
-Connection\ResolvePeerCountries=true
 Downloads\SavePath=/downloads
 Downloads\TempPath=/downloads/incomplete
 Downloads\TempPathEnabled=true
