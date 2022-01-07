@@ -5,7 +5,7 @@ FROM alpine:latest AS builder
 # https://github.com/qbittorrent/qBittorrent/wiki/Compilation%3A-Alpine-Linux
 RUN set -x \
     # Install build dependencies
- && apk add --no-cache -t .build-deps \
+ && apk update && apk add --no-cache -t .build-deps \
     autoconf \
     automake \
     build-base \
