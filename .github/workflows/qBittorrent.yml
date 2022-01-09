@@ -58,3 +58,4 @@ jobs:
           push: true
           tags: |
               xh116/qbittorrent:latest
+              xh116/qbittorrent:4.4.0
