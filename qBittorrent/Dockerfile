@@ -46,7 +46,7 @@ RUN cd /tmp \
     # Build lib rasterbar from source code (required by qBittorrent)
  RUN cd /tmp \
  && git clone --recurse-submodules https://github.com/arvidn/libtorrent.git /tmp/libtorrent-rasterbar  && cd /tmp/libtorrent-rasterbar \
- && git checkout "$(git tag -l --sort=-v:refname "v1*" | head -n 1)" \
+ #&& git checkout "$(git tag -l --sort=-v:refname "v1*" | head -n 1)" \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_CXX_STANDARD=17 \
