@@ -61,7 +61,7 @@ RUN cd /tmp \
     # Build qBittorrent from source code
  RUN cd /tmp \
  && git clone --shallow-submodules --recurse-submodules https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent  && cd /tmp/qbittorrent \
- && git checkout "$(git tag -l --sort=-v:refname | head -n 1)" \
+ && git checkout "$(git describe --tags `git rev-list --tags --max-count=1`)" \
  && cmake -Wno-dev -G Ninja -B build \
     -D QT6=ON \
     -D STACKTRACE=OFF \
