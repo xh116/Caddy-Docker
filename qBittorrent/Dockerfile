@@ -30,9 +30,8 @@ RUN set -x \
 
 # Build Ninja from source
 RUN cd /tmp \
-&& git clone --shallow-submodules --recurse-submodules https://github.com/ninja-build/ninja.git  /tmp/ninja \
-git checkout "$(git tag -l --sort=-v:refname "v*" | head -n 1)" \
-&& cd /tmp/ninja \
+&& git clone --shallow-submodules --recurse-submodules https://github.com/ninja-build/ninja.git  /tmp/ninja && cd /tmp/ninja \
+&& git checkout "$(git tag -l --sort=-v:refname "v*" | head -n 1)" \
 && cmake -Wno-dev -B build  \
     -D CMAKE_CXX_STANDARD=17 \
     -D CMAKE_INSTALL_PREFIX="/usr/local" \
@@ -46,9 +45,8 @@ RUN cd /tmp \
 
     # Build lib rasterbar from source code (required by qBittorrent)
  RUN cd /tmp \
- && git clone --recurse-submodules https://github.com/arvidn/libtorrent.git /tmp/libtorrent-rasterbar \
+ && git clone --recurse-submodules https://github.com/arvidn/libtorrent.git /tmp/libtorrent-rasterbar  && cd /tmp/libtorrent-rasterbar \
  && git checkout "$(git tag -l --sort=-v:refname "v1*" | head -n 1)" \
- && cd /tmp/libtorrent-rasterbar \
  && cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_CXX_STANDARD=17 \
@@ -62,9 +60,8 @@ RUN cd /tmp \
  
     # Build qBittorrent from source code
  RUN cd /tmp \
- && git clone --shallow-submodules --recurse-submodules https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent \
+ && git clone --shallow-submodules --recurse-submodules https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent  && cd /tmp/qbittorrent \
  && git checkout "$(git tag -l --sort=-v:refname | head -n 1)" \
- && cd /tmp/qbittorrent \
  && cmake -Wno-dev -G Ninja -B build \
     -D QT6=ON \
     -D STACKTRACE=OFF \
