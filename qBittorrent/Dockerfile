@@ -61,8 +61,10 @@ RUN cd /tmp \
     # Build qBittorrent from source code
  RUN cd /tmp \
  && git clone https://github.com/qbittorrent/qBittorrent.git /tmp/qbittorrent \
+ && latesttag=$(git describe --tags `git rev-list --tags --max-count=1`) \
+ && git checkout $latesttag \
  && cd /tmp/qbittorrent \
-&& cmake -Wno-dev -G Ninja -B build \
+ && cmake -Wno-dev -G Ninja -B build \
     -D QT6=ON \
     -D STACKTRACE=OFF \
     -D GUI=OFF \
