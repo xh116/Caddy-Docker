@@ -59,8 +59,7 @@ fi
 
 echo "Fixing permissions..."
 chown qbittorrent:qbittorrent /data \
-  /config \
-  /downloads
+  /config 
   
 chown -R qbittorrent:qbittorrent /home/qbittorrent
 
