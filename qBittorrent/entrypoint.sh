@@ -24,6 +24,7 @@ program=
 
 [BitTorrent]
 Session\DefaultSavePath=/downloads
+Session\FinishedTorrentExportDirectory=/downloads/torrents
 Session\Port=6881
 Session\QueueingSystemEnabled=true
 Session\TempPath=/downloads/incomplete
