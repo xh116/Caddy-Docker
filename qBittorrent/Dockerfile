@@ -105,7 +105,7 @@ RUN chmod a+x /entrypoint.sh && \
    adduser -D -h ${QBITTORRENT_HOME} -u ${PUID} -G qbittorrent -s /bin/sh qbittorrent && \
    mkdir -p ${QBITTORRENT_HOME}/.config/qBittorrent && \
    mkdir -p ${QBITTORRENT_HOME}/.local/share/qBittorrent && \
-   mkdir -p /downloads/incomplete/torrents && mkdir -p /downloads/torrents \
+   mkdir -p /downloads/incomplete/torrents && mkdir -p /downloads/torrents && \
    ln -s ${QBITTORRENT_HOME}/.config/qBittorrent /config && \
    ln -s ${QBITTORRENT_HOME}/.local/share/qBittorrent /data
    
