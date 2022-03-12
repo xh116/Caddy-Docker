@@ -5,7 +5,7 @@ RUN set -e \
     && apk add jq curl git \
     && export version=$(curl -s "https://api.github.com/repos/caddyserver/caddy/releases/latest" | jq -r .tag_name) \
     && echo ">>>>>>>>>>>>>>> ${version} ###############" \
-    && go get -u github.com/caddyserver/xcaddy/cmd/xcaddy \
+    && go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest  \
     && xcaddy build ${version} --output /caddy \ 
         --with github.com/caddy-dns/cloudflare \
         --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive \        
